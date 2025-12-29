@@ -210,7 +210,7 @@ export default async function Analytics() {
         </div>
 
         {/* Stats Grid */}
-        <div className="px-5 grid grid-cols-2 gap-4">
+        <div className="px-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <StatCard
             icon="Flame"
             label="Current Momentum"

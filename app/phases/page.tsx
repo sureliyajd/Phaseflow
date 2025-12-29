@@ -55,7 +55,7 @@ export default function PhasesPage() {
 
       if (response.ok) {
         // Refresh phases and redirect to dashboard
-        window.location.href = "/";
+        window.location.href = "/home";
       }
     } catch (error) {
       console.error("Error activating phase:", error);

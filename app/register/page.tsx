@@ -21,7 +21,7 @@ export default function Register() {
   // Redirect if already logged in
   useEffect(() => {
     if (status === "authenticated") {
-      window.location.href = "/";
+      window.location.href = "/home";
     }
   }, [status]);
 
@@ -93,7 +93,7 @@ export default function Register() {
         setIsLoading(false);
       } else {
         // Use window.location for a full page reload to ensure session is loaded
-        window.location.href = "/";
+        window.location.href = "/home";
       }
     } catch (error) {
       setError("Something went wrong on our end. Please try again.");

@@ -51,7 +51,7 @@ export default function CloneRoutine() {
 
   const handleClone = () => {
     // In real app, clone routine via API
-    router.push("/");
+    router.push("/home");
   };
 
   return (

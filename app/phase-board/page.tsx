@@ -72,7 +72,7 @@ export default function PhaseBoard() {
         const phaseData = await phaseResponse.json();
 
         if (!phaseResponse.ok || !phaseData.phase) {
-          router.push("/");
+          router.push("/home");
           return;
         }
 
@@ -442,7 +442,7 @@ export default function PhaseBoard() {
             }}
             onClose={() => setShowArchivePhase(false)}
             onConfirm={() => {
-              window.location.href = "/";
+              window.location.href = "/home";
             }}
           />
         )}

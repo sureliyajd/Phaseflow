@@ -25,7 +25,7 @@ export function BottomNav() {
   }, [pathname]);
 
 const navItems = [
-  { icon: Home, label: "Home", path: "/" },
+  { icon: Home, label: "Home", path: "/home" },
   { icon: Calendar, label: "My Day", path: "/today" },
     {
       icon: CalendarDays,
