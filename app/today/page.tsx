@@ -7,17 +7,9 @@ import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { EditDayBlocksModal } from "@/components/phases/EditDayBlocksModal";
 import { format, addDays, subDays } from "date-fns";
+import { getColorMap, type BlockColor } from "@/lib/block-colors";
 
-const colorMap = {
-  primary: { bg: "bg-primary-light", border: "border-primary/20", dot: "bg-primary" },
-  accent: { bg: "bg-accent/20", border: "border-accent/30", dot: "bg-accent" },
-  calm: { bg: "bg-calm/20", border: "border-calm/30", dot: "bg-calm" },
-  secondary: {
-    bg: "bg-secondary",
-    border: "border-secondary-foreground/10",
-    dot: "bg-secondary-foreground",
-  },
-};
+const colorMap = getColorMap();
 
 type BlockStatus = "DONE" | "SKIPPED" | "PENDING";
 
@@ -138,7 +130,7 @@ export default function Today() {
   const getBlockColor = (category: string | null): keyof typeof colorMap => {
     if (!category) return "primary";
     // Simple hash-based color assignment
-    const colors: (keyof typeof colorMap)[] = ["primary", "accent", "calm", "secondary"];
+    const colors: BlockColor[] = ["primary", "accent", "calm", "secondary", "purple", "green", "orange", "pink", "indigo", "red"];
     const hash = category.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
   };

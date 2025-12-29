@@ -12,6 +12,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Phaseflow - Your Daily Routine Companion",
   description: "A focused period where you commit to your daily routine. No pressure, just progress.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/phaseflow-icon.png",
+  },
 };
 
 export default function RootLayout({

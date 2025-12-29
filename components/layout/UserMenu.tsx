@@ -41,11 +41,11 @@ export function UserMenu() {
   const displayName = session.user?.name || session.user?.email?.split("@")[0] || "User";
 
   return (
-    <div className="flex items-center gap-3">
-      {/* User Info */}
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-3">
+      {/* User Info - Hidden on very small screens */}
+      <div className="hidden sm:flex items-center gap-2 min-w-0">
         <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold"
+          className="w-8 h-9 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
           style={{
             backgroundColor: "var(--color-primary)",
             color: "var(--color-primary-foreground)",
@@ -53,8 +53,8 @@ export function UserMenu() {
         >
           {getUserInitials()}
         </div>
-        <div className="hidden sm:block">
-          <p className="text-sm font-medium text-foreground">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-foreground truncate">
             {displayName}
           </p>
           <p className="text-xs text-muted-foreground truncate max-w-[120px]">
@@ -63,30 +63,47 @@ export function UserMenu() {
         </div>
       </div>
 
-      {/* Profile Button */}
-      <Link href="/profile">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-2"
-          title="Profile"
+      {/* Mobile: Just avatar icon, Desktop: Full user info + buttons */}
+      <div className="sm:hidden">
+        <div
+          className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
+          style={{
+            backgroundColor: "var(--color-primary)",
+            color: "var(--color-primary-foreground)",
+          }}
         >
-          <Settings className="w-4 h-4" />
-          <span className="hidden sm:inline">Profile</span>
-        </Button>
-      </Link>
+          {getUserInitials()}
+        </div>
+      </div>
 
-      {/* Logout Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleLogout}
-        disabled={isLoggingOut}
-        className="gap-2"
-      >
-        <LogOut className="w-4 h-4" />
-        <span className="hidden sm:inline">Logout</span>
-      </Button>
+      {/* Action Buttons */}
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* Profile/Settings Button */}
+        <Link href="/profile">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 sm:h-9 sm:w-9 md:h-auto md:w-auto md:px-3 md:gap-2"
+            title="Profile & Settings"
+          >
+            <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden md:inline">Profile</span>
+          </Button>
+        </Link>
+
+        {/* Logout Button - More spacing on mobile to prevent accidental clicks */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="h-8 w-8 sm:h-9 sm:w-9 md:h-auto md:w-auto md:px-3 md:gap-2 border-border/60"
+          title="Logout"
+        >
+          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span className="hidden md:inline">Logout</span>
+        </Button>
+      </div>
     </div>
   );
 }

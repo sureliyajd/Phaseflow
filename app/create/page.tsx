@@ -6,13 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, Repeat, Bell, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
-
-const colorOptions = [
-  { id: "primary", label: "Teal", class: "bg-primary" },
-  { id: "accent", label: "Coral", class: "bg-accent" },
-  { id: "calm", label: "Blue", class: "bg-calm" },
-  { id: "secondary", label: "Yellow", class: "bg-secondary-foreground" },
-];
+import { colorOptions, type BlockColor } from "@/lib/block-colors";
 
 const durationOptions = [
   "15 min",
@@ -27,7 +21,7 @@ export default function CreateBlock() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedColor, setSelectedColor] = useState("primary");
+  const [selectedColor, setSelectedColor] = useState<BlockColor>("primary");
   const [selectedDuration, setSelectedDuration] = useState("30 min");
   const [startTime, setStartTime] = useState("09:00");
 
@@ -93,7 +87,7 @@ export default function CreateBlock() {
               <Tag className="w-4 h-4" />
               Color Label
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-2 flex-wrap">
               {colorOptions.map((color) => (
                 <button
                   key={color.id}
@@ -102,8 +96,9 @@ export default function CreateBlock() {
                   className={`w-12 h-12 rounded-xl ${color.class} transition-all ${
                     selectedColor === color.id
                       ? "ring-2 ring-offset-2 ring-foreground/20 scale-110"
-                      : ""
+                      : "opacity-70 hover:opacity-100"
                   }`}
+                  title={color.label}
                 />
               ))}
             </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/Logo";
 
 export default function Login() {
   const router = useRouter();
@@ -71,11 +72,8 @@ export default function Login() {
       style={{ backgroundColor: "var(--color-background)" }}
     >
       {/* Logo */}
-      <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
-        style={{ backgroundColor: "var(--color-primary)" }}
-      >
-        <span className="text-2xl font-bold text-white">P</span>
+      <div className="mb-8">
+        <Logo variant="full" size="lg" />
       </div>
 
       {/* Title */}
@@ -172,22 +170,6 @@ export default function Login() {
           Create an account
         </Link>
       </p>
-
-      {/* Demo Account Card */}
-      <div
-        className="mt-6 p-4 rounded-2xl w-full max-w-sm"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--color-accent) 20%, transparent)",
-        }}
-      >
-        <p className="font-semibold text-foreground">Try it out</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Email: <span className="font-mono">demo@phaseflow.app</span>
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Password: <span className="font-mono">demo123</span>
-        </p>
-      </div>
 
       {/* Encouragement */}
       <p className="text-muted-foreground mt-8 text-center text-sm">

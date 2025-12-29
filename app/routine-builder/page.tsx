@@ -6,8 +6,7 @@ import { Plus, Clock, Tag, Trash2, Edit2, Sparkles, CheckCircle2, AlertCircle } 
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CloneRoutineModal } from "@/components/routine/CloneRoutineModal";
-
-type BlockColor = "primary" | "accent" | "calm" | "secondary";
+import { colorOptions, type BlockColor, getColorMap } from "@/lib/block-colors";
 
 interface RoutineBlock {
   id: string;
@@ -19,26 +18,7 @@ interface RoutineBlock {
   category?: string;
 }
 
-const colorOptions: { id: BlockColor; label: string; class: string }[] = [
-  { id: "primary", label: "Teal", class: "bg-primary" },
-  { id: "accent", label: "Coral", class: "bg-accent" },
-  { id: "calm", label: "Blue", class: "bg-calm" },
-  { id: "secondary", label: "Yellow", class: "bg-secondary-foreground" },
-];
-
-const colorMap = {
-  primary: "bg-primary-light border-primary/20",
-  accent: "bg-accent/20 border-accent/30",
-  calm: "bg-calm/20 border-calm/30",
-  secondary: "bg-secondary border-secondary-foreground/10",
-};
-
-const dotColorMap = {
-  primary: "bg-primary",
-  accent: "bg-accent",
-  calm: "bg-calm",
-  secondary: "bg-secondary-foreground",
-};
+const colorMap = getColorMap();
 
 export default function RoutineBuilder() {
   const router = useRouter();
@@ -354,15 +334,17 @@ export default function RoutineBuilder() {
             <div className="space-y-3 mb-6">
               {coreRoutine
                 .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))
-                .map((block, index) => (
+                .map((block, index) => {
+                  const colors = colorMap[block.color];
+                  return (
                 <div
                   key={block.id}
-                  className={`p-4 rounded-2xl border ${colorMap[block.color]} transition-all duration-200`}
+                  className={`p-4 rounded-2xl border ${colors.bg} ${colors.border} transition-all duration-200`}
                 >
                   <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-1">
                       <div
-                        className={`w-3 h-3 rounded-full ${dotColorMap[block.color]}`}
+                        className={`w-3 h-3 rounded-full ${colors.dot}`}
                       />
                         <div className="flex-1 min-w-0">
                         <p className="font-medium text-foreground">
@@ -410,7 +392,9 @@ export default function RoutineBuilder() {
                       </div>
                   </div>
                 </div>
-              ))}
+                  </div>
+                  );
+                })}
             </div>
           )}
 
@@ -520,7 +504,7 @@ export default function RoutineBuilder() {
                   <label className="text-sm text-muted-foreground mb-2 block">
                     Color
                   </label>
-                  <div className="flex gap-3">
+                  <div className="flex gap-2 flex-wrap">
                     {colorOptions.map((color) => (
                       <button
                         key={color.id}
@@ -529,8 +513,9 @@ export default function RoutineBuilder() {
                         className={`w-10 h-10 rounded-xl ${color.class} transition-all ${
                           selectedColor === color.id
                             ? "ring-2 ring-offset-2 ring-foreground/20 scale-110"
-                            : ""
+                            : "opacity-70 hover:opacity-100"
                         }`}
+                        title={color.label}
                       />
                     ))}
                   </div>

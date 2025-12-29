@@ -25,9 +25,10 @@ export const config = {
      * - register (register page)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - Static assets (images, icons, favicon)
+     * Note: Public folder files are automatically excluded from middleware
      */
-    "/((?!api/auth|api/register|login|register|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/register|login|register|_next/static|_next/image|favicon.ico|phaseflow-logo\\.png|phaseflow-icon\\.png).*)",
   ],
 };
 

@@ -89,29 +89,31 @@ export default function PhasesPage() {
     <AppLayout>
       <div className="min-h-screen pb-8">
         {/* Header */}
-        <div className="px-5 pt-8 pb-4">
-          <div className="flex items-center gap-4 mb-4">
+        <div className="px-4 sm:px-5 pt-8 pb-4">
+          <div className="flex items-center gap-3 sm:gap-4 mb-3">
             <Link href="/">
-              <Button variant="ghost" size="icon" className="h-10 w-10">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
-            <div className="flex-1">
-              <h1 className="text-xl font-bold text-foreground">Your Phases</h1>
-              <p className="text-sm text-muted-foreground">
-                Every phase is a chapter of your journey
-              </p>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">Your Phases</h1>
             </div>
-            <Link href="/create-phase">
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+            Every phase is a chapter of your journey
+          </p>
+          <div>
+            <Link href="/create-phase" className="block">
+              <Button size="sm" className="w-full sm:w-auto text-sm">
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                 New Phase
               </Button>
             </Link>
           </div>
         </div>
 
-        <div className="px-5 space-y-6">
+        <div className="px-4 sm:px-5 space-y-5 sm:space-y-6">
           {/* Active Phase */}
           {activePhase && (
             <div>

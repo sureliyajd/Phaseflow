@@ -95,37 +95,37 @@ export default function Dashboard() {
     return (
       <AppLayout>
         <div className="min-h-screen pb-8">
-          <div className="px-5 pt-8 pb-4 flex items-center justify-between">
+          <div className="px-4 sm:px-5 pt-6 sm:pt-8 pb-4">
             <div>
-              <p className="text-muted-foreground text-sm">{getGreeting()},</p>
-              <h1 className="text-2xl font-bold text-foreground">
+              <p className="text-muted-foreground text-xs sm:text-sm">{getGreeting()},</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">
                 {session?.user?.name || "Friend"}
               </h1>
             </div>
           </div>
 
-          <div className="mx-5 mt-8">
-            <div className="card-soft text-center py-12">
-              <div className="w-20 h-20 mx-auto rounded-3xl bg-primary-light flex items-center justify-center mb-6">
-                <Calendar className="w-10 h-10 text-primary" />
+          <div className="mx-4 sm:mx-5 mt-6 sm:mt-8">
+            <div className="card-soft text-center py-8 sm:py-12">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-primary-light flex items-center justify-center mb-4 sm:mb-6">
+                <Calendar className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
               </div>
-              <h2 className="text-xl font-bold text-foreground mb-2">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                 Ready to Begin?
               </h2>
-              <p className="text-muted-foreground mb-6 max-w-xs mx-auto">
+              <p className="text-sm sm:text-base text-muted-foreground mb-5 sm:mb-6 max-w-xs mx-auto px-4">
                 A phase is your container for intentional living. Set it up
                 in a way that feels right for you.
               </p>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2 sm:gap-3 px-4">
               <Link href="/create-phase">
-                  <Button size="xl" className="w-full">
-                  <Plus className="w-5 h-5 mr-2" />
+                  <Button size="xl" className="w-full text-sm sm:text-base">
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Create Phase
                 </Button>
               </Link>
                 <Link href="/phases">
-                  <Button variant="outline" className="w-full">
-                    <List className="w-4 h-4 mr-2" />
+                  <Button variant="outline" className="w-full text-sm sm:text-base">
+                    <List className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
                     View All Phases
                   </Button>
                 </Link>
@@ -142,18 +142,18 @@ export default function Dashboard() {
     <AppLayout>
       <div className="min-h-screen pb-8">
         {/* Header */}
-        <div className="px-5 pt-8 pb-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-muted-foreground text-sm">{getGreeting()},</p>
-              <h1 className="text-2xl font-bold text-foreground">
+        <div className="px-4 sm:px-5 pt-6 sm:pt-8 pb-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-muted-foreground text-xs sm:text-sm">{getGreeting()},</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground break-words">
                 {session?.user?.name || "Friend"}
               </h1>
             </div>
             {metrics && metrics.streak > 0 && (
-              <div className="streak-badge">
-                <Sparkles className="w-4 h-4" />
-                <span>
+              <div className="streak-badge flex-shrink-0">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="text-xs sm:text-sm whitespace-nowrap">
                   {metrics.streak} {metrics.streak === 1 ? "day" : "days"} going strong
                 </span>
               </div>
@@ -162,50 +162,56 @@ export default function Dashboard() {
         </div>
 
         {/* Phase Card */}
-        <div className="mx-5 card-soft">
-          <div className="flex items-center gap-4">
-            <ProgressRing
-              progress={Math.round((activePhase.currentDay / activePhase.durationDays) * 100)}
-            />
-            <div className="flex-1">
-              <p className="text-sm text-muted-foreground">Current Phase</p>
-              <h2 className="font-bold text-foreground text-lg">
-                {activePhase.name}
-              </h2>
-              <p className="text-sm text-primary font-medium mt-1">
-                Day {activePhase.currentDay} of {activePhase.durationDays}
-                {activePhase.currentDay === 1 && " · Just started"}
-              </p>
+        <div className="mx-4 sm:mx-5 mb-4">
+          <div className="card-soft">
+            <div className="flex items-start gap-3 sm:gap-4 mb-4">
+              <div className="flex-shrink-0">
+                <ProgressRing
+                  progress={Math.round((activePhase.currentDay / activePhase.durationDays) * 100)}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Current Phase</p>
+                <h2 className="font-bold text-foreground text-lg sm:text-xl mt-0.5 break-words">
+                  {activePhase.name}
+                </h2>
+                <p className="text-xs sm:text-sm text-primary font-medium mt-1">
+                  Day {activePhase.currentDay} of {activePhase.durationDays}
+                  {activePhase.currentDay === 1 && " · Just started"}
+                </p>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Link href="/phases">
+            
+            {/* Manage Phase Section */}
+            <div className="pt-4 border-t border-border/50">
+              <p className="text-xs font-medium text-muted-foreground mb-2 sm:mb-3">Manage Phase</p>
+              <div className="flex gap-1.5 sm:gap-2">
+                <Link href="/phases" className="flex-1 min-w-0">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
+                  >
+                    <List className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                    <span className="truncate">All Phases</span>
+                  </Button>
+                </Link>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9"
-                  title="View All Phases"
+                  variant="outline"
+                  className="flex-1 justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 min-w-0"
+                  onClick={() => setShowEditPhase(true)}
                 >
-                  <List className="w-4 h-4" />
+                  <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">Edit</span>
                 </Button>
-              </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9"
-                onClick={() => setShowEditPhase(true)}
-                title="Edit Phase"
-              >
-                <Edit2 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 text-muted-foreground hover:text-destructive"
-                onClick={() => setShowArchivePhase(true)}
-                title="Archive Phase"
-              >
-                <Archive className="w-4 h-4" />
-              </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 text-muted-foreground hover:text-destructive min-w-0"
+                  onClick={() => setShowArchivePhase(true)}
+                >
+                  <Archive className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">Archive</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -240,14 +246,14 @@ export default function Dashboard() {
         )}
 
         {/* Today's Progress */}
-        <div className="mx-5 mt-4 card-soft">
+        <div className="mx-4 sm:mx-5 mt-4 card-soft">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-foreground">Today</h3>
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">Today</h3>
             <Link
               href="/today"
-              className="text-sm text-primary font-medium flex items-center gap-1"
+              className="text-xs sm:text-sm text-primary font-medium flex items-center gap-1"
             >
-              View all <ArrowRight className="w-4 h-4" />
+              View all <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Link>
           </div>
           {metrics && metrics.todayBlocks.total > 0 ? (
@@ -281,53 +287,53 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Row */}
-        <div className="mx-5 mt-4 grid grid-cols-2 gap-4">
-          <div className="card-soft text-center">
-            <p className="text-3xl font-bold text-primary">
+        <div className="mx-4 sm:mx-5 mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="card-soft text-center p-3 sm:p-4">
+            <p className="text-2xl sm:text-3xl font-bold text-primary">
               {metrics?.adherence !== null && metrics?.adherence !== undefined
                 ? `${metrics.adherence}%`
                 : "—"}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {metrics?.adherence !== null && metrics?.adherence !== undefined
                 ? "Days you met your goals"
                 : "Complete routines to see trends"}
             </p>
           </div>
-          <div className="card-soft text-center">
-            <p className="text-3xl font-bold text-foreground">
+          <div className="card-soft text-center p-3 sm:p-4">
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">
               {metrics?.streak || 0}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {metrics?.streak === 1 ? "Day of consistency" : "Days of consistency"}
             </p>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="mx-5 mt-6">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">
+        <div className="mx-4 sm:mx-5 mt-4 sm:mt-6">
+          <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground mb-2 sm:mb-3">
             What feels right now?
           </h3>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <Link href="/today">
-              <Button variant="outline" className="w-full justify-start">
-                <Play className="w-4 h-4 mr-2 text-primary" />
-                Begin my day
+              <Button variant="outline" className="w-full justify-start text-xs sm:text-sm">
+                <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-primary flex-shrink-0" />
+                <span className="truncate">Begin my day</span>
               </Button>
             </Link>
             <Link href="/timesheet">
-              <Button variant="outline" className="w-full justify-start">
-                <Plus className="w-4 h-4 mr-2 text-accent" />
-                Log something
+              <Button variant="outline" className="w-full justify-start text-xs sm:text-sm">
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-accent flex-shrink-0" />
+                <span className="truncate">Log something</span>
               </Button>
             </Link>
           </div>
         </div>
 
         {/* Encouragement */}
-        <div className="mx-5 mt-6 p-5 rounded-2xl bg-gradient-to-br from-primary-light to-calm/20 border border-primary/10">
-          <p className="text-center text-foreground">
+        <div className="mx-4 sm:mx-5 mt-4 sm:mt-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-primary-light to-calm/20 border border-primary/10">
+          <p className="text-center text-foreground text-sm sm:text-base">
             Progress isn't always visible. Trust the process.
           </p>
         </div>

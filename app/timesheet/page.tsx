@@ -26,7 +26,7 @@ interface Phase {
 const priorityColors = {
   HIGH: { bg: "bg-accent/20", border: "border-accent/30", dot: "bg-accent" },
   MEDIUM: { bg: "bg-primary-light", border: "border-primary/20", dot: "bg-primary" },
-  LOW: { bg: "bg-muted", border: "border-border/50", dot: "bg-muted-foreground" },
+  LOW: { bg: "bg-secondary/30", border: "border-secondary/40", dot: "bg-secondary-foreground" },
 };
 
 export default function Timesheet() {
@@ -377,7 +377,7 @@ export default function Timesheet() {
 
                     <div>
                       <label className="text-sm text-muted-foreground mb-2 block">
-                        Priority
+                        Importance of this life event
                       </label>
                       <div className="flex gap-2">
                         {(["HIGH", "MEDIUM", "LOW"] as const).map((priority) => (

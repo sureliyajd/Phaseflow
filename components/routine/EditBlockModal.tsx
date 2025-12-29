@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { colorOptions, type BlockColor } from "@/lib/block-colors";
 
 interface Block {
   id: string;
@@ -10,7 +11,7 @@ interface Block {
   description: string;
   time: string;
   duration: string;
-  color: "primary" | "accent" | "calm" | "secondary";
+  color: BlockColor;
   executionStatus?: "DONE" | "SKIPPED" | "PENDING";
 }
 
@@ -19,13 +20,6 @@ interface EditBlockModalProps {
   onClose: () => void;
   onSave: (updatedBlock: Partial<Block>) => void;
 }
-
-const colorOptions: { id: Block["color"]; label: string; class: string }[] = [
-  { id: "primary", label: "Teal", class: "bg-primary" },
-  { id: "accent", label: "Coral", class: "bg-accent" },
-  { id: "calm", label: "Blue", class: "bg-calm" },
-  { id: "secondary", label: "Yellow", class: "bg-secondary-foreground" },
-];
 
 const durationOptions = [
   "15 min",
@@ -41,7 +35,7 @@ export function EditBlockModal({ block, onClose, onSave }: EditBlockModalProps) 
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState("");
-  const [color, setColor] = useState<Block["color"]>("primary");
+  const [color, setColor] = useState<BlockColor>("primary");
 
   useEffect(() => {
     setTitle(block.title);
@@ -138,7 +132,7 @@ export function EditBlockModal({ block, onClose, onSave }: EditBlockModalProps) 
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               Color
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-2 flex-wrap">
               {colorOptions.map((colorOption) => (
                 <button
                   key={colorOption.id}
@@ -147,8 +141,9 @@ export function EditBlockModal({ block, onClose, onSave }: EditBlockModalProps) 
                   className={`w-10 h-10 rounded-xl ${colorOption.class} transition-all ${
                     color === colorOption.id
                       ? "ring-2 ring-offset-2 ring-foreground/20 scale-110"
-                      : ""
+                      : "opacity-70 hover:opacity-100"
                   }`}
+                  title={colorOption.label}
                 />
               ))}
             </div>

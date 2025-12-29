@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Plus, Trash2, Clock, Tag, FileText, Calendar, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, parseISO } from "date-fns";
+import { colorOptions, type BlockColor, getColorMap } from "@/lib/block-colors";
 
 interface RoutineBlock {
   id?: string;
@@ -12,7 +13,10 @@ interface RoutineBlock {
   startTime: string;
   endTime: string;
   category: string;
+  color?: BlockColor;
 }
+
+const colorMap = getColorMap();
 
 interface EditDayBlocksModalProps {
   phaseId: string;
@@ -45,6 +49,7 @@ export function EditDayBlocksModal({
         ? initialBlocks.map((b) => ({
             ...b,
             category: b.category || "",
+            color: (b as any).color || "primary",
           }))
         : [
             {
@@ -52,6 +57,7 @@ export function EditDayBlocksModal({
               startTime: "09:00",
               endTime: "09:30",
               category: "",
+              color: "primary" as BlockColor,
             },
           ]
     );
@@ -127,6 +133,7 @@ export function EditDayBlocksModal({
         startTime: "09:00",
         endTime: "09:30",
         category: "",
+        color: "primary" as BlockColor,
       },
     ]);
   };
@@ -191,6 +198,7 @@ export function EditDayBlocksModal({
               startTime: b.startTime,
               endTime: b.endTime,
               category: b.category.trim() || "Uncategorized",
+              color: b.color || "primary",
             })),
             scope,
             selectedDates: scope === "selected" ? selectedDates : undefined,
@@ -427,6 +435,29 @@ export function EditDayBlocksModal({
                         Add
                       </Button>
                     )}
+                  </div>
+                </div>
+
+                {/* Color */}
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-2 block">
+                    Color
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
+                    {colorOptions.map((colorOption) => (
+                      <button
+                        key={colorOption.id}
+                        type="button"
+                        onClick={() => updateBlock(index, "color", colorOption.id)}
+                        className={`w-8 h-8 rounded-lg ${colorOption.class} transition-all ${
+                          block.color === colorOption.id
+                            ? "ring-2 ring-offset-2 ring-foreground/20 scale-110"
+                            : "opacity-70 hover:opacity-100"
+                        }`}
+                        disabled={isSaving}
+                        title={colorOption.label}
+                      />
+                    ))}
                   </div>
                 </div>
 

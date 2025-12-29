@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
-import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/Logo";
 
 export default function Register() {
   const router = useRouter();
@@ -106,11 +107,8 @@ export default function Register() {
       style={{ backgroundColor: "var(--color-background)" }}
     >
       {/* Logo */}
-      <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
-        style={{ backgroundColor: "var(--color-primary)" }}
-      >
-        <span className="text-2xl font-bold text-white">P</span>
+      <div className="mb-8">
+        <Logo variant="full" size="lg" />
       </div>
 
       {/* Title */}

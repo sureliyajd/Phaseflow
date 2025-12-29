@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Calendar, Target, Heart, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Calendar, Target, Heart, Sparkles, Loader2, Clock, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { format, addDays } from "date-fns";
+import { TemplatePreviewModal } from "@/components/phases/TemplatePreviewModal";
+import { PhaseTemplate } from "@/lib/phase-templates";
 
 const durationOptions = [
   {
@@ -26,20 +28,70 @@ const durationOptions = [
   },
 ];
 
+type CreateMode = "selection" | "from-scratch" | "from-template";
+
 export default function CreatePhase() {
   const router = useRouter();
 
+  // Mode state
+  const [mode, setMode] = useState<CreateMode>("selection");
+  const [selectedTemplate, setSelectedTemplate] = useState<PhaseTemplate | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [templates, setTemplates] = useState<PhaseTemplate[]>([]);
+
+  // Form state
   const [name, setName] = useState("");
   const [duration, setDuration] = useState(30);
   const [customDuration, setCustomDuration] = useState("");
   const [useCustomDuration, setUseCustomDuration] = useState(false);
-  const [startDate, setStartDate] = useState(
-    format(new Date(), "yyyy-MM-dd")
-  );
+  const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [whyStarting, setWhyStarting] = useState("");
   const [expectedOutcome, setExpectedOutcome] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Fetch templates
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await fetch("/api/phase-templates");
+        const data = await response.json();
+        if (response.ok && data.templates) {
+          setTemplates(data.templates);
+        }
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
+
+  // Pre-fill form when template is selected
+  useEffect(() => {
+    if (selectedTemplate && mode === "from-template") {
+      setDuration(selectedTemplate.suggestedDuration);
+      setName(selectedTemplate.name);
+    }
+  }, [selectedTemplate, mode]);
+
+  const handleTemplateSelect = (template: PhaseTemplate) => {
+    setSelectedTemplate(template);
+    setShowPreview(true);
+  };
+
+  const handleUseTemplate = () => {
+    setShowPreview(false);
+    setMode("from-template");
+  };
+
+  const handleCreateFromScratch = () => {
+    setMode("from-scratch");
+    setName("");
+    setDuration(30);
+    setCustomDuration("");
+    setUseCustomDuration(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +133,27 @@ export default function CreatePhase() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/phases", {
+      let response;
+      
+      if (mode === "from-template" && selectedTemplate) {
+        // Create from template
+        response = await fetch("/api/phases/from-template", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            templateId: selectedTemplate.id,
+            name: name.trim(),
+            durationDays: finalDuration,
+            startDate,
+            why: whyStarting.trim(),
+            outcome: expectedOutcome.trim(),
+          }),
+        });
+      } else {
+        // Create from scratch
+        response = await fetch("/api/phases", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,6 +166,7 @@ export default function CreatePhase() {
           outcome: expectedOutcome.trim(),
         }),
       });
+      }
 
       const data = await response.json();
 
@@ -103,8 +176,14 @@ export default function CreatePhase() {
         return;
       }
 
-      // Redirect to routine builder for onboarding
+      // Redirect based on mode
+      if (mode === "from-template") {
+        // Templates already have blocks cloned, go to phase board
+        router.push("/phase-board");
+      } else {
+        // From scratch needs routine builder
     router.push("/routine-builder");
+      }
     } catch (error) {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
@@ -127,6 +206,8 @@ export default function CreatePhase() {
 
   const endDate = getEndDate();
 
+  // Template Selection Screen
+  if (mode === "selection") {
   return (
     <AppLayout>
       <div className="min-h-screen pb-8">
@@ -143,7 +224,146 @@ export default function CreatePhase() {
                 Create Your Phase
               </h1>
               <p className="text-sm text-muted-foreground">
-                Design a rhythm that works for you
+                  Choose how you'd like to get started
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-5 space-y-6">
+            {/* Create from Scratch Option */}
+            <div
+              onClick={handleCreateFromScratch}
+              className="p-6 rounded-2xl border-2 border-border bg-card hover:border-primary/30 hover:bg-primary-light/30 transition-all cursor-pointer"
+            >
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-primary-light">
+                  <Sparkles className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    Create from Scratch
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Start with a blank canvas and build your routine exactly how you envision it
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-background text-muted-foreground">or</span>
+              </div>
+            </div>
+
+            {/* Template Section */}
+            <div>
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-foreground mb-1">
+                  Start from a Template
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Get inspired by predefined routines. You can customize everything once you create your phase.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {templates.map((template) => (
+                  <div
+                    key={template.id}
+                    className="p-5 rounded-2xl border border-border/50 bg-card hover:border-primary/30 hover:bg-primary-light/20 transition-all cursor-pointer"
+                    onClick={() => handleTemplateSelect(template)}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-semibold text-foreground">
+                            {template.name}
+                          </h3>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Clock className="w-3 h-3" />
+                            <span>{template.suggestedDuration} days</span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {template.description}
+                        </p>
+                        {template.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {template.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="px-2 py-1 text-xs font-medium rounded-full bg-primary-light text-primary"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTemplateSelect(template);
+                        }}
+                        className="flex-shrink-0"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Preview
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Preview Modal */}
+          {selectedTemplate && showPreview && (
+            <TemplatePreviewModal
+              template={selectedTemplate}
+              onClose={() => {
+                setShowPreview(false);
+                setSelectedTemplate(null);
+              }}
+              onUseTemplate={handleUseTemplate}
+            />
+          )}
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Phase Creation Form (both from-scratch and from-template)
+  return (
+    <AppLayout>
+      <div className="min-h-screen pb-8">
+        {/* Header */}
+        <div className="px-5 pt-8 pb-6">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10"
+              onClick={() => setMode("selection")}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">
+                Create Your Phase
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {mode === "from-template" && selectedTemplate
+                  ? `Starting from "${selectedTemplate.name}" template`
+                  : "Design a rhythm that works for you"}
               </p>
             </div>
           </div>
@@ -170,6 +390,11 @@ export default function CreatePhase() {
               className="input-soft w-full text-lg"
               required
             />
+            {mode === "from-template" && selectedTemplate && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Feel free to change this name — it's just a starting point
+              </p>
+            )}
           </div>
 
           {/* Duration Selection */}
@@ -315,8 +540,9 @@ export default function CreatePhase() {
                   This is your space
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  There's no perfect way to do this. Adjust as you learn.
-                  What matters is that you've chosen to begin.
+                  {mode === "from-template"
+                    ? "The template is just a starting point. Once your phase is created, you can edit everything — blocks, times, categories — to make it truly yours."
+                    : "There's no perfect way to do this. Adjust as you learn. What matters is that you've chosen to begin."}
                 </p>
               </div>
             </div>
@@ -345,4 +571,3 @@ export default function CreatePhase() {
     </AppLayout>
   );
 }
-
