@@ -1,6 +1,7 @@
 "use client";
 
-import { Archive, X } from "lucide-react";
+import { useState } from "react";
+import { Archive, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Phase {
@@ -22,7 +23,34 @@ interface ArchivePhaseModalProps {
 }
 
 export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
   if (!phase) return null;
+
+  const handleArchive = async () => {
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/phases/${phase.id}/archive`, {
+        method: "PATCH",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Failed to archive phase");
+        setIsLoading(false);
+        return;
+      }
+
+      onConfirm();
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -51,6 +79,11 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
             <p className="text-sm text-muted-foreground">
               This will end your current phase. You can start a new phase anytime.
             </p>
+            {error && (
+              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -65,10 +98,18 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
             <Button
               type="button"
               variant="destructive"
-              onClick={onConfirm}
+              onClick={handleArchive}
               className="flex-1"
+              disabled={isLoading}
             >
-              Archive Phase
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Archiving...
+                </>
+              ) : (
+                "Archive Phase"
+              )}
             </Button>
           </div>
         </div>

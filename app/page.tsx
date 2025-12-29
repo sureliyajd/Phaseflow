@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, Plus, Play, Calendar, ArrowRight, Loader2, Edit2, Archive } from "lucide-react";
+import { Sparkles, Plus, Play, Calendar, ArrowRight, Loader2, Edit2, Archive, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -44,25 +44,25 @@ export default function Dashboard() {
   const [showEditPhase, setShowEditPhase] = useState(false);
   const [showArchivePhase, setShowArchivePhase] = useState(false);
 
-  useEffect(() => {
-    const fetchActivePhase = async () => {
-      try {
-        const response = await fetch("/api/phases/active");
-        const data = await response.json();
-        
-        if (response.ok && data.phase) {
-          setActivePhase(data.phase);
-        } else {
-          setActivePhase(null);
-        }
-      } catch (error) {
-        console.error("Error fetching active phase:", error);
+  const fetchActivePhase = async () => {
+    try {
+      const response = await fetch("/api/phases/active");
+      const data = await response.json();
+      
+      if (response.ok && data.phase) {
+        setActivePhase(data.phase);
+      } else {
         setActivePhase(null);
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching active phase:", error);
+      setActivePhase(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchActivePhase();
   }, []);
 
@@ -101,12 +101,20 @@ export default function Dashboard() {
                 A phase is a focused period where you commit to your daily
                 routine. No pressure, just progress.
               </p>
-              <Link href="/create-phase">
-                <Button size="xl">
-                  <Plus className="w-5 h-5 mr-2" />
-                  Create Phase
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-3">
+                <Link href="/create-phase">
+                  <Button size="xl" className="w-full">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Create Phase
+                  </Button>
+                </Link>
+                <Link href="/phases">
+                  <Button variant="outline" className="w-full">
+                    <List className="w-4 h-4 mr-2" />
+                    View All Phases
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -148,6 +156,16 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex gap-2">
+              <Link href="/phases">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  title="View All Phases"
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 size="icon"
@@ -176,9 +194,10 @@ export default function Dashboard() {
             phase={activePhase}
             onClose={() => setShowEditPhase(false)}
             onSave={(updatedPhase) => {
-              // UI only - no backend yet
               setActivePhase({ ...activePhase, ...updatedPhase });
               setShowEditPhase(false);
+              // Refresh the phase data
+              fetchActivePhase();
             }}
           />
         )}
@@ -189,9 +208,10 @@ export default function Dashboard() {
             phase={activePhase}
             onClose={() => setShowArchivePhase(false)}
             onConfirm={() => {
-              // UI only - no backend yet
               setActivePhase(null);
               setShowArchivePhase(false);
+              // Refresh to update state
+              window.location.href = "/";
             }}
           />
         )}

@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { addDays } from "date-fns";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -15,12 +17,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
-
-    // Get all phases for the user, ordered by creation date (newest first)
-    const phases = await prisma.phase.findMany({
+    const { id } = await params;
+    const phase = await prisma.phase.findFirst({
       where: {
-        userId,
+        id,
+        userId: session.user.id,
       },
       select: {
         id: true,
@@ -34,14 +35,18 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         completedAt: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
     });
 
-    return NextResponse.json({ phases });
+    if (!phase) {
+      return NextResponse.json(
+        { error: "Phase not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ phase });
   } catch (error) {
-    console.error("Error fetching phases:", error);
+    console.error("Error fetching phase:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -49,9 +54,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    // Get the current session
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -61,27 +68,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
-    const { name, durationDays, startDate, why, outcome } = body;
+    const { name, why, outcome } = body;
 
     // Validation
     if (!name || !name.trim()) {
       return NextResponse.json(
         { error: "Phase name is required" },
-        { status: 400 }
-      );
-    }
-
-    if (!durationDays || durationDays < 1) {
-      return NextResponse.json(
-        { error: "Duration must be at least 1 day" },
-        { status: 400 }
-      );
-    }
-
-    if (!startDate) {
-      return NextResponse.json(
-        { error: "Start date is required" },
         { status: 400 }
       );
     }
@@ -100,38 +94,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
-    const start = new Date(startDate);
-    // Set start date to beginning of day
-    start.setHours(0, 0, 0, 0);
-    
-    // Calculate end date (durationDays - 1 because start date is day 1)
-    const end = addDays(start, durationDays - 1);
-    // Set end date to end of day (23:59:59.999)
-    end.setHours(23, 59, 59, 999);
-
-    // Archive any existing active phases for this user
-    await prisma.phase.updateMany({
+    // Check if phase exists and belongs to user
+    const existingPhase = await prisma.phase.findFirst({
       where: {
-        userId,
-        isActive: true,
-      },
-      data: {
-        isActive: false,
+        id,
+        userId: session.user.id,
       },
     });
 
-    // Create the new phase
-    const phase = await prisma.phase.create({
+    if (!existingPhase) {
+      return NextResponse.json(
+        { error: "Phase not found" },
+        { status: 404 }
+      );
+    }
+
+    // Update phase
+    const updatedPhase = await prisma.phase.update({
+      where: { id },
       data: {
-        userId,
         name: name.trim(),
-        durationDays,
-        startDate: start,
-        endDate: end,
         why: why.trim(),
         outcome: outcome.trim(),
-        isActive: true,
       },
       select: {
         id: true,
@@ -146,12 +130,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      { message: "Phase created successfully", phase },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      message: "Phase updated successfully",
+      phase: updatedPhase,
+    });
   } catch (error) {
-    console.error("Phase creation error:", error);
+    console.error("Error updating phase:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
