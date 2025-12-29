@@ -1,10 +1,19 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import { Clock, CheckCircle2, Flame, Target, LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
+type IconName = "Clock" | "CheckCircle2" | "Flame" | "Target";
+
+const iconMap: Record<IconName, LucideIcon> = {
+  Clock,
+  CheckCircle2,
+  Flame,
+  Target,
+};
+
 interface StatCardProps {
-  icon: LucideIcon;
+  icon: IconName;
   label: string;
   value: string;
   subtext?: string;
@@ -32,13 +41,14 @@ const colorStyles = {
 };
 
 export function StatCard({
-  icon: Icon,
+  icon,
   label,
   value,
   subtext,
   color,
   delay = 0,
 }: StatCardProps) {
+  const Icon = iconMap[icon];
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

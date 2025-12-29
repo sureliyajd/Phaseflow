@@ -16,6 +16,10 @@ model User {
   id            String   @id @default(uuid())
   email         String   @unique
   passwordHash  String
+  name          String
+  bio           String?
+  timezone      String?
+  avatarUrl     String?
   createdAt     DateTime @default(now())
   phases        Phase[]
 }
@@ -30,6 +34,8 @@ model Phase {
   why           String
   outcome       String
   isActive      Boolean  @default(true)
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
   createdAt     DateTime @default(now())
   completedAt   DateTime?
 

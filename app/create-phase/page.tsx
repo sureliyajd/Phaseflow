@@ -104,7 +104,7 @@ export default function CreatePhase() {
       }
 
       // Redirect to routine builder for onboarding
-      router.push("/routine-builder");
+    router.push("/routine-builder");
     } catch (error) {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
@@ -268,9 +268,9 @@ export default function CreatePhase() {
               required
             />
             {endDate && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Ends on {format(endDate, "MMMM d, yyyy")}
-              </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Ends on {format(endDate, "MMMM d, yyyy")}
+            </p>
             )}
           </div>
 

@@ -24,9 +24,9 @@ export function BottomNav() {
     checkActivePhase();
   }, [pathname]);
 
-  const navItems = [
-    { icon: Home, label: "Home", path: "/" },
-    { icon: Calendar, label: "Today", path: "/today" },
+const navItems = [
+  { icon: Home, label: "Home", path: "/" },
+  { icon: Calendar, label: "Today", path: "/today" },
     {
       icon: CalendarDays,
       label: "Phase Board",
@@ -34,9 +34,9 @@ export function BottomNav() {
       isMain: true,
       fallbackPath: "/create",
     },
-    { icon: Clock, label: "Timesheet", path: "/timesheet" },
-    { icon: BarChart3, label: "Analytics", path: "/analytics" },
-  ];
+  { icon: Clock, label: "Timesheet", path: "/timesheet" },
+  { icon: BarChart3, label: "Analytics", path: "/analytics" },
+];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border/50 pb-2">

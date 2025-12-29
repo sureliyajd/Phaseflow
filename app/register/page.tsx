@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 export default function Register() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,8 +45,13 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       setError("Please fill in all fields");
+      return;
+    }
+
+    if (!name.trim()) {
+      setError("Name cannot be empty");
       return;
     }
 
@@ -63,7 +69,7 @@ export default function Register() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name: name.trim(), email, password }),
       });
 
       const data = await response.json();
@@ -117,6 +123,27 @@ export default function Register() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
+        {/* Name */}
+        <div>
+          <label className="text-sm font-medium text-muted-foreground mb-2 block">
+            Name
+          </label>
+          <div className="relative">
+            <User
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+              style={{ color: "var(--color-muted-foreground)" }}
+            />
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              className="input-soft w-full pl-12"
+              required
+            />
+          </div>
+        </div>
+
         {/* Email */}
         <div>
           <label className="text-sm font-medium text-muted-foreground mb-2 block">

@@ -258,7 +258,7 @@ export default function Today() {
                           {isUpdating && isDone ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
                           ) : (
-                            <Check className="w-5 h-5" />
+                          <Check className="w-5 h-5" />
                           )}
                         </Button>
                         <Button
@@ -272,7 +272,7 @@ export default function Today() {
                           {isUpdating && isSkipped ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
                           ) : (
-                            <X className="w-5 h-5" />
+                          <X className="w-5 h-5" />
                           )}
                         </Button>
                       </div>

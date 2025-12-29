@@ -5,11 +5,18 @@ import bcrypt from "bcryptjs";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password, name } = body;
 
-    if (!email || !password) {
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Email, password, and name are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!name.trim()) {
+      return NextResponse.json(
+        { error: "Name cannot be empty" },
         { status: 400 }
       );
     }
@@ -41,10 +48,12 @@ export async function POST(request: NextRequest) {
       data: {
         email,
         passwordHash,
+        name: name.trim(),
       },
       select: {
         id: true,
         email: true,
+        name: true,
         createdAt: true,
       },
     });

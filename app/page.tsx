@@ -102,12 +102,12 @@ export default function Dashboard() {
                 routine. No pressure, just progress.
               </p>
               <div className="flex flex-col gap-3">
-                <Link href="/create-phase">
+              <Link href="/create-phase">
                   <Button size="xl" className="w-full">
-                    <Plus className="w-5 h-5 mr-2" />
-                    Create Phase
-                  </Button>
-                </Link>
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create Phase
+                </Button>
+              </Link>
                 <Link href="/phases">
                   <Button variant="outline" className="w-full">
                     <List className="w-4 h-4 mr-2" />

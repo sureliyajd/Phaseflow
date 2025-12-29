@@ -174,7 +174,7 @@ export default function RoutineBuilder() {
           `Overlaps with "${block.title}" (${formatTime(block.startTime)} - ${formatTime(block.endTime)})`
         );
         return true;
-      }
+    }
     }
 
     setTimeError("");
@@ -182,12 +182,12 @@ export default function RoutineBuilder() {
   };
 
   const formatTime = (time: string): string => {
-    const [hours, minutes] = time.split(":");
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
+      const [hours, minutes] = time.split(":");
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    };
 
   const handleTimeChange = (type: "start" | "end", value: string) => {
     if (type === "start") {
@@ -355,30 +355,30 @@ export default function RoutineBuilder() {
               {coreRoutine
                 .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))
                 .map((block, index) => (
-                  <div
-                    key={block.id}
-                    className={`p-4 rounded-2xl border ${colorMap[block.color]} transition-all duration-200`}
-                  >
-                    <div className="flex items-center justify-between">
+                <div
+                  key={block.id}
+                  className={`p-4 rounded-2xl border ${colorMap[block.color]} transition-all duration-200`}
+                >
+                  <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-1">
-                        <div
-                          className={`w-3 h-3 rounded-full ${dotColorMap[block.color]}`}
-                        />
+                      <div
+                        className={`w-3 h-3 rounded-full ${dotColorMap[block.color]}`}
+                      />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-foreground">
-                            {block.title}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                        <p className="font-medium text-foreground">
+                          {block.title}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                             <Clock className="w-3 h-3 flex-shrink-0" />
-                            <span>
+                          <span>
                               {formatTime(block.startTime)} - {formatTime(block.endTime)}
-                            </span>
-                            {block.category && (
-                              <>
-                                <span>·</span>
+                          </span>
+                          {block.category && (
+                            <>
+                              <span>·</span>
                                 <Tag className="w-3 h-3" />
-                                <span>{block.category}</span>
-                              </>
+                              <span>{block.category}</span>
+                            </>
                             )}
                           </div>
                           {block.note && (
@@ -398,19 +398,19 @@ export default function RoutineBuilder() {
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
                           onClick={() => handleDeleteBlock(block.id)}
                           title="Delete Block"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                       </div>
-                    </div>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           )}
 
@@ -493,12 +493,12 @@ export default function RoutineBuilder() {
                         ))}
                       </div>
                     )}
-                    <input
-                      type="text"
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
+                  <input
+                    type="text"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
                       placeholder="Type to create new or select above"
-                      className="input-soft w-full"
+                    className="input-soft w-full"
                     />
                   </div>
                 </div>
@@ -579,7 +579,7 @@ export default function RoutineBuilder() {
                 </p>
                 <Button size="xl" className="w-full" onClick={handleApplyRoutine}>
                   Apply this routine to my phase
-                </Button>
+              </Button>
               </div>
             </div>
           )}

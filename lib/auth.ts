@@ -18,6 +18,12 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            passwordHash: true,
+          },
         });
 
         if (!user) {
@@ -36,6 +42,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
+          name: user.name,
         };
       },
     }),
@@ -47,20 +54,22 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-      }
-      return session;
-    },
+      async jwt({ token, user }) {
+        if (user) {
+          token.id = user.id;
+          token.email = user.email;
+          token.name = user.name;
+        }
+        return token;
+      },
+      async session({ session, token }) {
+        if (session.user) {
+          session.user.id = token.id as string;
+          session.user.email = token.email as string;
+          session.user.name = token.name as string;
+        }
+        return session;
+      },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

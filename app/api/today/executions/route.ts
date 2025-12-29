@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { parseISO, startOfDay } from "date-fns";
+import { recalculateStreakAfterExecution } from "@/lib/streak";
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,6 +75,14 @@ export async function POST(request: NextRequest) {
         status: status as "DONE" | "SKIPPED",
       },
     });
+
+    // Recalculate streak after execution change
+    try {
+      await recalculateStreakAfterExecution(routineBlock.phaseId);
+    } catch (streakError) {
+      // Log error but don't fail the request
+      console.error("Error recalculating streak:", streakError);
+    }
 
     return NextResponse.json({
       message: "Execution status updated successfully",
