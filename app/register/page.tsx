@@ -7,7 +7,7 @@ import { signIn, useSession } from "next-auth/react";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function Login() {
+export default function Register() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [email, setEmail] = useState("");
@@ -35,7 +35,7 @@ export default function Login() {
     );
   }
 
-  // Don't render login form if authenticated (will redirect)
+  // Don't render register form if authenticated (will redirect)
   if (status === "authenticated") {
     return null;
   }
@@ -43,9 +43,38 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      // Register user
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Registration failed");
+        setIsLoading(false);
+        return;
+      }
+
+      // Auto sign in after registration
       const result = await signIn("credentials", {
         email,
         password,
@@ -53,7 +82,7 @@ export default function Login() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError("Account created but login failed. Please try logging in.");
         setIsLoading(false);
       } else {
         // Use window.location for a full page reload to ensure session is loaded
@@ -79,9 +108,11 @@ export default function Login() {
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-2">
+        Start your journey
+      </h1>
       <p className="text-muted-foreground mb-8">
-        Continue your journey with Phaseflow
+        Create your Phaseflow account
       </p>
 
       {/* Form */}
@@ -102,6 +133,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               className="input-soft w-full pl-12"
+              required
             />
           </div>
         </div>
@@ -120,8 +152,10 @@ export default function Login() {
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="At least 6 characters"
               className="input-soft w-full pl-12 pr-12"
+              required
+              minLength={6}
             />
             <button
               type="button"
@@ -153,45 +187,29 @@ export default function Login() {
           {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Signing in...
+              Creating account...
             </>
           ) : (
-            "Sign in"
+            "Create account"
           )}
         </Button>
       </form>
 
-      {/* Register Link */}
+      {/* Login Link */}
       <p className="text-muted-foreground mt-6">
-        New to Phaseflow?{" "}
+        Already have an account?{" "}
         <Link
-          href="/register"
+          href="/login"
           className="font-medium"
           style={{ color: "var(--color-primary)" }}
         >
-          Create an account
+          Sign in
         </Link>
       </p>
 
-      {/* Demo Account Card */}
-      <div
-        className="mt-6 p-4 rounded-2xl w-full max-w-sm"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--color-accent) 20%, transparent)",
-        }}
-      >
-        <p className="font-semibold text-foreground">Demo Account</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Email: <span className="font-mono">demo@phaseflow.app</span>
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Password: <span className="font-mono">demo123</span>
-        </p>
-      </div>
-
       {/* Encouragement */}
       <p className="text-muted-foreground mt-8 text-center text-sm">
-        Every day is a fresh start. You've got this.
+        Small consistent steps lead to big changes.
       </p>
     </div>
   );

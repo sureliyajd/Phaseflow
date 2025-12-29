@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Clock, Tag, Trash2, ChevronRight } from "lucide-react";
+import { ArrowLeft, Plus, Clock, Tag, Trash2, ChevronRight, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ApplyChangesDialog } from "@/components/routine/ApplyChangesDialog";
 
 type BlockColor = "primary" | "accent" | "calm" | "secondary";
 
@@ -53,6 +54,7 @@ export default function RoutineBuilder() {
   const router = useRouter();
   const [coreRoutine, setCoreRoutine] = useState<RoutineBlock[]>([]);
   const [isAdding, setIsAdding] = useState(false);
+  const [editingBlock, setEditingBlock] = useState<RoutineBlock | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedColor, setSelectedColor] = useState<BlockColor>("primary");
@@ -60,6 +62,8 @@ export default function RoutineBuilder() {
   const [startTime, setStartTime] = useState("09:00");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [note, setNote] = useState("");
+  const [showApplyDialog, setShowApplyDialog] = useState(false);
+  const [pendingBlock, setPendingBlock] = useState<RoutineBlock | null>(null);
 
   const resetForm = () => {
     setTitle("");
@@ -70,6 +74,35 @@ export default function RoutineBuilder() {
     setSelectedCategory("");
     setNote("");
     setIsAdding(false);
+    setEditingBlock(null);
+  };
+
+  const loadBlockForEdit = (block: RoutineBlock) => {
+    setTitle(block.title);
+    setDescription(block.description || "");
+    setSelectedColor(block.color);
+    setSelectedDuration(block.duration);
+    // Parse time from "9:00 AM" format back to "09:00"
+    const timeMatch = block.time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      let hours = parseInt(timeMatch[1]);
+      const minutes = timeMatch[2];
+      const ampm = timeMatch[3].toUpperCase();
+      if (ampm === "PM" && hours !== 12) hours += 12;
+      if (ampm === "AM" && hours === 12) hours = 0;
+      setStartTime(`${hours.toString().padStart(2, "0")}:${minutes}`);
+    }
+    setSelectedCategory(block.category || "");
+    setEditingBlock(block);
+    setIsAdding(true);
+  };
+
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(":");
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
   };
 
   const handleAddBlock = () => {
@@ -77,16 +110,8 @@ export default function RoutineBuilder() {
       return;
     }
 
-    const formatTime = (time: string) => {
-      const [hours, minutes] = time.split(":");
-      const hour = parseInt(hours);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour % 12 || 12;
-      return `${displayHour}:${minutes} ${ampm}`;
-    };
-
-    const newBlock: RoutineBlock = {
-      id: Date.now().toString(),
+    const blockData: RoutineBlock = {
+      id: editingBlock?.id || Date.now().toString(),
       title: title.trim(),
       description: description.trim() || undefined,
       time: formatTime(startTime),
@@ -95,7 +120,32 @@ export default function RoutineBuilder() {
       category: selectedCategory || undefined,
     };
 
-    setCoreRoutine([...coreRoutine, newBlock]);
+    if (editingBlock) {
+      // Editing existing block - show apply dialog
+      setPendingBlock(blockData);
+      setShowApplyDialog(true);
+    } else {
+      // New block - add directly
+      setCoreRoutine([...coreRoutine, blockData]);
+      resetForm();
+    }
+  };
+
+  const handleApplyChanges = (applyTo: "today" | "future" | "all") => {
+    if (!pendingBlock) return;
+
+    if (editingBlock) {
+      // Update the block in the routine
+      setCoreRoutine((prev) =>
+        prev.map((b) => (b.id === editingBlock.id ? pendingBlock : b))
+      );
+    }
+
+    // UI only - no backend logic yet
+    console.log(`Applying changes to: ${applyTo}`);
+    
+    setShowApplyDialog(false);
+    setPendingBlock(null);
     resetForm();
   };
 
@@ -163,18 +213,30 @@ export default function RoutineBuilder() {
                         </div>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() =>
-                        setCoreRoutine(
-                          coreRoutine.filter((b) => b.id !== block.id)
-                        )
-                      }
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-primary"
+                        onClick={() => loadBlockForEdit(block)}
+                        title="Edit Block"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() =>
+                          setCoreRoutine(
+                            coreRoutine.filter((b) => b.id !== block.id)
+                          )
+                        }
+                        title="Delete Block"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -185,7 +247,7 @@ export default function RoutineBuilder() {
           {isAdding ? (
             <div className="card-soft mb-6">
               <h3 className="font-semibold text-foreground mb-4">
-                New Routine Block
+                {editingBlock ? "Edit Routine Block" : "New Routine Block"}
               </h3>
 
               <div className="space-y-4">
@@ -287,7 +349,7 @@ export default function RoutineBuilder() {
                     Cancel
                   </Button>
                   <Button onClick={handleAddBlock} className="flex-1">
-                    Add Block
+                    {editingBlock ? "Save Changes" : "Add Block"}
                   </Button>
                 </div>
               </div>
@@ -325,6 +387,17 @@ export default function RoutineBuilder() {
             </div>
           )}
         </div>
+
+        {/* Apply Changes Dialog */}
+        {showApplyDialog && (
+          <ApplyChangesDialog
+            onClose={() => {
+              setShowApplyDialog(false);
+              setPendingBlock(null);
+            }}
+            onApply={handleApplyChanges}
+          />
+        )}
       </div>
     </AppLayout>
   );

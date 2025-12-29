@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Calendar, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Check, X, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { EditBlockModal } from "@/components/routine/EditBlockModal";
 import { format, addDays, subDays } from "date-fns";
 
 const colorMap = {
@@ -64,6 +65,8 @@ const mockBlocks: Block[] = [
 export default function Today() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [blocks, setBlocks] = useState<Block[]>(mockBlocks);
+  const [editingBlock, setEditingBlock] = useState<Block | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
   const todayBlocks = blocks; // In real app, filter by date
@@ -160,13 +163,39 @@ export default function Today() {
                         </p>
                       </div>
 
-                      {/* Status Buttons */}
+                      {/* Action Buttons */}
                       <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
+                          onClick={() => {
+                            setEditingBlock(block);
+                            setShowEditModal(true);
+                          }}
+                          title="Edit Block"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-destructive"
+                          onClick={() => {
+                            if (confirm("Delete this block?")) {
+                              setBlocks(blocks.filter((b) => b.id !== block.id));
+                            }
+                          }}
+                          title="Delete Block"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                         <Button
                           variant={isDone ? "default" : "outline"}
                           size="icon"
                           className="h-10 w-10 rounded-xl"
                           onClick={() => handleStatus(block.id, "DONE")}
+                          title="Mark as Done"
                         >
                           <Check className="w-5 h-5" />
                         </Button>
@@ -175,6 +204,7 @@ export default function Today() {
                           size="icon"
                           className="h-10 w-10 rounded-xl"
                           onClick={() => handleStatus(block.id, "SKIPPED")}
+                          title="Skip"
                         >
                           <X className="w-5 h-5" />
                         </Button>
@@ -204,6 +234,24 @@ export default function Today() {
             </div>
           )}
         </div>
+
+        {/* Edit Block Modal */}
+        {showEditModal && editingBlock && (
+          <EditBlockModal
+            block={editingBlock}
+            onClose={() => {
+              setShowEditModal(false);
+              setEditingBlock(null);
+            }}
+            onSave={(updatedBlock) => {
+              setBlocks((prev) =>
+                prev.map((b) => (b.id === editingBlock.id ? { ...b, ...updatedBlock } : b))
+              );
+              setShowEditModal(false);
+              setEditingBlock(null);
+            }}
+          />
+        )}
       </div>
     </AppLayout>
   );

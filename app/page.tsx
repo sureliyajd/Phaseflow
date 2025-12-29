@@ -1,18 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sparkles, Plus, Play, Calendar, ArrowRight } from "lucide-react";
+import { Sparkles, Plus, Play, Calendar, ArrowRight, Loader2, Edit2, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { EditPhaseModal } from "@/components/phases/EditPhaseModal";
+import { ArchivePhaseModal } from "@/components/phases/ArchivePhaseModal";
+import { format } from "date-fns";
 
-// Mock data - will be replaced with real data later
-const hasActivePhase = false; // Set to true to see the dashboard with phase
-const activePhase = hasActivePhase
-  ? {
-      name: "30-Day Focus Reset",
-      duration: 30,
-    }
-  : null;
-const phaseDay = 12;
+interface Phase {
+  id: string;
+  name: string;
+  durationDays: number;
+  startDate: string;
+  endDate: string;
+  why: string;
+  outcome: string;
+  isActive: boolean;
+  currentDay: number;
+}
+
 const todayBlocks = [
   { id: "1", title: "Morning Meditation", completed: true },
   { id: "2", title: "Deep Work Session", completed: true },
@@ -30,6 +39,44 @@ const getGreeting = () => {
 };
 
 export default function Dashboard() {
+  const [activePhase, setActivePhase] = useState<Phase | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showEditPhase, setShowEditPhase] = useState(false);
+  const [showArchivePhase, setShowArchivePhase] = useState(false);
+
+  useEffect(() => {
+    const fetchActivePhase = async () => {
+      try {
+        const response = await fetch("/api/phases/active");
+        const data = await response.json();
+        
+        if (response.ok && data.phase) {
+          setActivePhase(data.phase);
+        } else {
+          setActivePhase(null);
+        }
+      } catch (error) {
+        console.error("Error fetching active phase:", error);
+        setActivePhase(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchActivePhase();
+  }, []);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="min-h-screen pb-8 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
+        </div>
+      </AppLayout>
+    );
+  }
+
   // No active phase - prompt to create
   if (!activePhase) {
     return (
@@ -89,7 +136,7 @@ export default function Dashboard() {
         <div className="mx-5 card-soft">
           <div className="flex items-center gap-4">
             <ProgressRing
-              progress={Math.round((phaseDay / activePhase.duration) * 100)}
+              progress={Math.round((activePhase.currentDay / activePhase.durationDays) * 100)}
             />
             <div className="flex-1">
               <p className="text-sm text-muted-foreground">Current Phase</p>
@@ -97,11 +144,57 @@ export default function Dashboard() {
                 {activePhase.name}
               </h2>
               <p className="text-sm text-primary font-medium mt-1">
-                Day {phaseDay} of {activePhase.duration}
+                Day {activePhase.currentDay} of {activePhase.durationDays}
               </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setShowEditPhase(true)}
+                title="Edit Phase"
+              >
+                <Edit2 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                onClick={() => setShowArchivePhase(true)}
+                title="Archive Phase"
+              >
+                <Archive className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
+
+        {/* Edit Phase Modal */}
+        {showEditPhase && (
+          <EditPhaseModal
+            phase={activePhase}
+            onClose={() => setShowEditPhase(false)}
+            onSave={(updatedPhase) => {
+              // UI only - no backend yet
+              setActivePhase({ ...activePhase, ...updatedPhase });
+              setShowEditPhase(false);
+            }}
+          />
+        )}
+
+        {/* Archive Phase Modal */}
+        {showArchivePhase && (
+          <ArchivePhaseModal
+            phase={activePhase}
+            onClose={() => setShowArchivePhase(false)}
+            onConfirm={() => {
+              // UI only - no backend yet
+              setActivePhase(null);
+              setShowArchivePhase(false);
+            }}
+          />
+        )}
 
         {/* Today's Progress */}
         <div className="mx-5 mt-4 card-soft">
