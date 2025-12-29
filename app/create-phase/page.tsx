@@ -12,17 +12,17 @@ const durationOptions = [
   {
     value: 30,
     label: "30 days",
-    description: "Perfect for building a new habit",
+    description: "A gentle start — enough time to explore",
   },
   {
     value: 60,
     label: "60 days",
-    description: "Deeper transformation",
+    description: "Room to settle into your rhythm",
   },
   {
     value: 90,
     label: "90 days",
-    description: "Complete lifestyle shift",
+    description: "A meaningful chapter of growth",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function CreatePhase() {
 
     // Validation
     if (!name.trim()) {
-      setError("Phase name is required");
+      setError("Give your phase a name that resonates with you");
       return;
     }
 
@@ -56,7 +56,7 @@ export default function CreatePhase() {
     if (useCustomDuration) {
       const customValue = parseInt(customDuration);
       if (!customDuration || isNaN(customValue) || customValue < 1) {
-        setError("Please enter a valid duration (at least 1 day)");
+        setError("Choose a duration that feels achievable — even one day counts");
         return;
       }
       finalDuration = customValue;
@@ -64,17 +64,17 @@ export default function CreatePhase() {
 
     // Validate start date
     if (!startDate || isNaN(new Date(startDate).getTime())) {
-      setError("Please select a valid start date");
+      setError("Pick a start date — whenever feels right");
       return;
     }
 
     if (!whyStarting.trim()) {
-      setError("Please tell us why you're starting this phase");
+      setError("Knowing your 'why' helps on harder days");
       return;
     }
 
     if (!expectedOutcome.trim()) {
-      setError("Please describe your expected outcome");
+      setError("Imagine where you'd like to be — even a small hope counts");
       return;
     }
 
@@ -140,10 +140,10 @@ export default function CreatePhase() {
             </Link>
             <div>
               <h1 className="text-xl font-bold text-foreground">
-                Create Phase
+                Create Your Phase
               </h1>
               <p className="text-sm text-muted-foreground">
-                Start your focused journey
+                Design a rhythm that works for you
               </p>
             </div>
           </div>
@@ -278,12 +278,12 @@ export default function CreatePhase() {
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block flex items-center gap-2">
               <Heart className="w-4 h-4" />
-              Why are you starting this phase? <span className="text-red-500">*</span>
+              What's drawing you to start this? <span className="text-red-500">*</span>
             </label>
             <textarea
               value={whyStarting}
               onChange={(e) => setWhyStarting(e.target.value)}
-              placeholder="What's motivating you right now?"
+              placeholder="What matters to you about this?"
               rows={3}
               className="input-soft w-full resize-none"
               required
@@ -294,12 +294,12 @@ export default function CreatePhase() {
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block flex items-center gap-2">
               <Target className="w-4 h-4" />
-              What outcome do you hope for? <span className="text-red-500">*</span>
+              How do you hope to feel at the end? <span className="text-red-500">*</span>
             </label>
             <textarea
               value={expectedOutcome}
               onChange={(e) => setExpectedOutcome(e.target.value)}
-              placeholder="How will you feel at the end?"
+              placeholder="Imagine your future self..."
               rows={3}
               className="input-soft w-full resize-none"
               required
@@ -312,11 +312,11 @@ export default function CreatePhase() {
               <Sparkles className="w-5 h-5 text-primary mt-0.5" />
               <div>
                 <p className="font-medium text-foreground">
-                  You're taking a meaningful step
+                  This is your space
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  This phase is about progress, not perfection. Be kind to
-                  yourself along the way.
+                  There's no perfect way to do this. Adjust as you learn.
+                  What matters is that you've chosen to begin.
                 </p>
               </div>
             </div>

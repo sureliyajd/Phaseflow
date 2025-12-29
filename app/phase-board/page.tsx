@@ -12,12 +12,14 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { format, parseISO, isToday, isPast, isFuture } from "date-fns";
 import { EditPhaseModal } from "@/components/phases/EditPhaseModal";
 import { ArchivePhaseModal } from "@/components/phases/ArchivePhaseModal";
+import { EditDayBlocksModal } from "@/components/phases/EditDayBlocksModal";
 
 interface Phase {
   id: string;
@@ -55,6 +57,8 @@ export default function PhaseBoard() {
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
   const [showEditPhase, setShowEditPhase] = useState(false);
   const [showArchivePhase, setShowArchivePhase] = useState(false);
+  const [editingDay, setEditingDay] = useState<string | null>(null);
+  const [editingDayBlocks, setEditingDayBlocks] = useState<DayBlock[]>([]);
 
   useEffect(() => {
     const fetchPhaseData = async () => {
@@ -120,7 +124,7 @@ export default function PhaseBoard() {
         <div className="min-h-screen pb-8 flex items-center justify-center">
           <div className="text-center">
             <div className="w-12 h-12 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-muted-foreground">Loading phase board...</p>
+            <p className="text-muted-foreground">Getting your phase ready...</p>
           </div>
         </div>
       </AppLayout>
@@ -190,7 +194,7 @@ export default function PhaseBoard() {
         </div>
 
         {/* Timeline */}
-        <div className="px-5 space-y-2">
+        <div className="px-5 space-y-1.5">
           {days.map((day) => {
             const isExpanded = expandedDays.has(day.date);
             const hasBlocks = day.blocks.length > 0;
@@ -206,58 +210,72 @@ export default function PhaseBoard() {
                     : ""
                 }`}
               >
-                {/* Day Header */}
-                <button
-                  onClick={() => toggleDay(day.date)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3 flex-1 text-left">
-                    {day.isToday && (
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                    )}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-foreground">
-                          Day {day.dayNumber}
-                        </p>
-                        {day.isToday && (
-                          <span className="px-2 py-0.5 rounded-lg text-xs font-medium bg-primary-light text-primary">
-                            Today
-                          </span>
-                        )}
-                        {day.isPast && !day.isToday && (
-                          <span className="text-xs text-muted-foreground">
-                            Past
-                          </span>
-                        )}
-                        {day.isFuture && (
-                          <span className="text-xs text-muted-foreground">
-                            Future
-                          </span>
-                        )}
+                {/* Day Header - Compact */}
+                <div className="flex items-center gap-2 p-3">
+                  <button
+                    onClick={() => toggleDay(day.date)}
+                    className="flex items-center gap-2 flex-1 text-left min-w-0 hover:bg-muted/50 transition-colors rounded-lg p-2 -m-2"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {day.isToday && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                      )}
+                      {day.isPast && !day.isToday && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 flex-shrink-0" />
+                      )}
+                      {day.isFuture && (
+                        <div className="w-1.5 h-1.5 rounded-full border border-muted-foreground/30 flex-shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm text-foreground">
+                            Day {day.dayNumber}
+                          </p>
+                          {day.isToday && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-light text-primary">
+                              Today
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <p className="text-xs text-muted-foreground truncate">
+                            {format(parseISO(day.dateObj), "MMM d")}
+                          </p>
+                          {hasBlocks && (
+                            <>
+                              <span className="text-xs text-muted-foreground">·</span>
+                              <span className="text-xs text-muted-foreground">
+                                {day.blocks.length} {day.blocks.length === 1 ? "block" : "blocks"}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {format(parseISO(day.dateObj), "EEEE, MMMM d, yyyy")}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {hasBlocks && (
-                        <span className="text-xs text-muted-foreground">
-                          {day.blocks.length} block{day.blocks.length !== 1 ? "s" : ""}
-                        </span>
-                      )}
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                        <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       )}
                     </div>
-                  </div>
-                </button>
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 flex-shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingDay(day.date);
+                      setEditingDayBlocks(day.blocks);
+                    }}
+                    title="Edit blocks for this day"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                </div>
 
                 {/* Day Blocks */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 space-y-2 border-t border-border/50 pt-4">
+                  <div className="px-3 pb-3 space-y-1.5 border-t border-border/30 pt-3">
                     {hasBlocks ? (
                       day.blocks
                         .sort((a, b) => {
@@ -268,27 +286,27 @@ export default function PhaseBoard() {
                         .map((block) => (
                           <div
                             key={block.id}
-                            className="p-3 rounded-xl bg-muted/50 border border-border/50"
+                            className="p-2.5 rounded-lg bg-muted/30 border border-border/30"
                           >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className="font-medium text-foreground">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm text-foreground">
                                   {block.title}
                                 </p>
-                                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                                  <Clock className="w-3 h-3" />
-                                  <span>
+                                <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
+                                  <Clock className="w-3 h-3 flex-shrink-0" />
+                                  <span className="truncate">
                                     {formatTime(block.startTime)} - {formatTime(block.endTime)}
                                   </span>
                                   {block.category && (
                                     <>
                                       <span>·</span>
-                                      <span>{block.category}</span>
+                                      <span className="truncate">{block.category}</span>
                                     </>
                                   )}
                                 </div>
                                 {block.note && (
-                                  <p className="text-xs text-muted-foreground mt-1 italic">
+                                  <p className="text-xs text-muted-foreground mt-1 italic truncate">
                                     {block.note}
                                   </p>
                                 )}
@@ -297,10 +315,21 @@ export default function PhaseBoard() {
                           </div>
                         ))
                     ) : (
-                      <div className="text-center py-6">
-                        <p className="text-sm text-muted-foreground">
-                          No routine blocks scheduled for this day
+                      <div className="text-center py-4">
+                        <p className="text-xs text-muted-foreground mb-2">
+                          A quiet day — nothing planned yet
                         </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setEditingDay(day.date);
+                            setEditingDayBlocks([]);
+                          }}
+                        >
+                          <Pencil className="w-3.5 h-3.5 mr-1.5" />
+                          Add something
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -309,6 +338,25 @@ export default function PhaseBoard() {
             );
           })}
         </div>
+
+        {/* Edit Day Blocks Modal */}
+        {editingDay && phase && (
+          <EditDayBlocksModal
+            phaseId={phase.id}
+            date={editingDay}
+            initialBlocks={editingDayBlocks}
+            onClose={() => {
+              setEditingDay(null);
+              setEditingDayBlocks([]);
+            }}
+            onSave={() => {
+              setEditingDay(null);
+              setEditingDayBlocks([]);
+              // Refresh phase data
+              window.location.reload();
+            }}
+          />
+        )}
 
         {/* Edit Phase Modal */}
         {showEditPhase && phase && (

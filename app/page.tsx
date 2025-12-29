@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Sparkles, Plus, Play, Calendar, ArrowRight, Loader2, Edit2, Archive, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
@@ -22,27 +23,25 @@ interface Phase {
   currentDay: number;
 }
 
-const todayBlocks = [
-  { id: "1", title: "Morning Meditation", completed: true },
-  { id: "2", title: "Deep Work Session", completed: true },
-  { id: "3", title: "Exercise", completed: false },
-];
-const completedBlocks = todayBlocks.filter((b) => b.completed).length;
-const streak = 12;
-const adherence = 85;
-
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  if (hour >= 17 && hour < 22) return "Good evening";
+  return "Good night";
 };
 
 export default function Dashboard() {
+  const { data: session } = useSession();
   const [activePhase, setActivePhase] = useState<Phase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showEditPhase, setShowEditPhase] = useState(false);
   const [showArchivePhase, setShowArchivePhase] = useState(false);
+  const [metrics, setMetrics] = useState<{
+    streak: number;
+    adherence: number | null;
+    todayBlocks: { total: number; completed: number };
+  } | null>(null);
 
   const fetchActivePhase = async () => {
     try {
@@ -62,8 +61,22 @@ export default function Dashboard() {
     }
   };
 
+  const fetchMetrics = async () => {
+    try {
+      const response = await fetch("/api/dashboard/metrics");
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMetrics(data);
+      }
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
+    }
+  };
+
   useEffect(() => {
     fetchActivePhase();
+    fetchMetrics();
   }, []);
 
   // Show loading state
@@ -85,7 +98,9 @@ export default function Dashboard() {
           <div className="px-5 pt-8 pb-4 flex items-center justify-between">
             <div>
               <p className="text-muted-foreground text-sm">{getGreeting()},</p>
-              <h1 className="text-2xl font-bold text-foreground">Friend</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                {session?.user?.name || "Friend"}
+              </h1>
             </div>
           </div>
 
@@ -95,11 +110,11 @@ export default function Dashboard() {
                 <Calendar className="w-10 h-10 text-primary" />
               </div>
               <h2 className="text-xl font-bold text-foreground mb-2">
-                Start Your First Phase
+                Ready to Begin?
               </h2>
               <p className="text-muted-foreground mb-6 max-w-xs mx-auto">
-                A phase is a focused period where you commit to your daily
-                routine. No pressure, just progress.
+                A phase is your container for intentional living. Set it up
+                in a way that feels right for you.
               </p>
               <div className="flex flex-col gap-3">
               <Link href="/create-phase">
@@ -131,12 +146,18 @@ export default function Dashboard() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-muted-foreground text-sm">{getGreeting()},</p>
-              <h1 className="text-2xl font-bold text-foreground">Friend</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                {session?.user?.name || "Friend"}
+              </h1>
             </div>
-            <div className="streak-badge">
-              <Sparkles className="w-4 h-4" />
-              <span>{streak} day streak</span>
-            </div>
+            {metrics && metrics.streak > 0 && (
+              <div className="streak-badge">
+                <Sparkles className="w-4 h-4" />
+                <span>
+                  {metrics.streak} {metrics.streak === 1 ? "day" : "days"} going strong
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -153,6 +174,7 @@ export default function Dashboard() {
               </h2>
               <p className="text-sm text-primary font-medium mt-1">
                 Day {activePhase.currentDay} of {activePhase.durationDays}
+                {activePhase.currentDay === 1 && " · Just started"}
               </p>
             </div>
             <div className="flex gap-2">
@@ -196,8 +218,9 @@ export default function Dashboard() {
             onSave={(updatedPhase) => {
               setActivePhase({ ...activePhase, ...updatedPhase });
               setShowEditPhase(false);
-              // Refresh the phase data
+              // Refresh the phase data and metrics
               fetchActivePhase();
+              fetchMetrics();
             }}
           />
         )}
@@ -227,30 +250,32 @@ export default function Dashboard() {
               View all <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{
-                    width:
-                      todayBlocks.length > 0
-                        ? `${(completedBlocks / todayBlocks.length) * 100}%`
-                        : "0%",
-                  }}
-                />
+          {metrics && metrics.todayBlocks.total > 0 ? (
+            <>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, Math.max(0, (metrics.todayBlocks.completed / metrics.todayBlocks.total) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-foreground">
+                  {metrics.todayBlocks.completed}/{metrics.todayBlocks.total}
+                </span>
               </div>
-            </div>
-            <span className="text-sm font-medium text-foreground">
-              {completedBlocks}/{todayBlocks.length}
-            </span>
-          </div>
-          {todayBlocks.length === 0 && (
-            <p className="text-sm text-muted-foreground mt-3">
-              No blocks scheduled for today.{" "}
-              <Link href="/routine-builder" className="text-primary">
-                Add some?
-              </Link>
+              <p className="text-xs text-muted-foreground mt-2">
+                {metrics.todayBlocks.completed === metrics.todayBlocks.total
+                  ? "You showed up today. Well done."
+                  : `${metrics.todayBlocks.total - metrics.todayBlocks.completed} ${metrics.todayBlocks.total - metrics.todayBlocks.completed === 1 ? "block" : "blocks"} to go — no rush`}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Your schedule is open today. Take a breath.
             </p>
           )}
         </div>
@@ -258,31 +283,43 @@ export default function Dashboard() {
         {/* Stats Row */}
         <div className="mx-5 mt-4 grid grid-cols-2 gap-4">
           <div className="card-soft text-center">
-            <p className="text-3xl font-bold text-primary">{adherence}%</p>
-            <p className="text-xs text-muted-foreground mt-1">Adherence Rate</p>
+            <p className="text-3xl font-bold text-primary">
+              {metrics?.adherence !== null && metrics?.adherence !== undefined
+                ? `${metrics.adherence}%`
+                : "—"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {metrics?.adherence !== null && metrics?.adherence !== undefined
+                ? "Days you met your goals"
+                : "Complete routines to see trends"}
+            </p>
           </div>
           <div className="card-soft text-center">
-            <p className="text-3xl font-bold text-foreground">{streak}</p>
-            <p className="text-xs text-muted-foreground mt-1">Current Streak</p>
+            <p className="text-3xl font-bold text-foreground">
+              {metrics?.streak || 0}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {metrics?.streak === 1 ? "Day of consistency" : "Days of consistency"}
+            </p>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="mx-5 mt-6">
           <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-            Quick Actions
+            What feels right now?
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <Link href="/today">
               <Button variant="outline" className="w-full justify-start">
                 <Play className="w-4 h-4 mr-2 text-primary" />
-                Start Today
+                Begin my day
               </Button>
             </Link>
             <Link href="/timesheet">
               <Button variant="outline" className="w-full justify-start">
                 <Plus className="w-4 h-4 mr-2 text-accent" />
-                Log Activity
+                Log something
               </Button>
             </Link>
           </div>
@@ -291,7 +328,7 @@ export default function Dashboard() {
         {/* Encouragement */}
         <div className="mx-5 mt-6 p-5 rounded-2xl bg-gradient-to-br from-primary-light to-calm/20 border border-primary/10">
           <p className="text-center text-foreground">
-            Every small step counts. You're doing great.
+            Progress isn't always visible. Trust the process.
           </p>
         </div>
       </div>

@@ -132,7 +132,7 @@ export function CloneRoutineModal({
             <div className="w-8 h-8 rounded-xl bg-primary-light flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-foreground">Apply Routine</h2>
+            <h2 className="text-xl font-bold text-foreground">Bring Your Routine to Life</h2>
           </div>
           <Button
             variant="ghost"
@@ -147,8 +147,7 @@ export function CloneRoutineModal({
         <div className="space-y-6">
           <div>
             <p className="text-sm text-muted-foreground mb-4">
-              How would you like to apply your {routineBlocks.length} routine block
-              {routineBlocks.length !== 1 ? "s" : ""}?
+              How would you like to spread your {routineBlocks.length} {routineBlocks.length === 1 ? "block" : "blocks"} across your phase?
             </p>
 
             {/* Clone Options */}
@@ -167,10 +166,10 @@ export function CloneRoutineModal({
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-foreground">
-                      Entire Phase Duration
+                      Every Day
                     </p>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                      Apply to all {phaseDuration} days
+                      Fill all {phaseDuration} days with this routine
                     </p>
                   </div>
                   {cloneOption === "all" && (
@@ -193,10 +192,10 @@ export function CloneRoutineModal({
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-foreground">
-                      Exclude Weekends
+                      Weekdays Only
                     </p>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                      Apply to weekdays only
+                      Keep weekends free
                     </p>
                   </div>
                   {cloneOption === "weekdays" && (
@@ -219,10 +218,10 @@ export function CloneRoutineModal({
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-foreground">
-                      Custom Dates
+                      Custom Selection
                     </p>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                      Exclude specific dates
+                      Skip certain dates
                     </p>
                   </div>
                   {cloneOption === "custom" && (
@@ -236,9 +235,9 @@ export function CloneRoutineModal({
           {/* Custom Date Exclusion */}
           {cloneOption === "custom" && (
             <div className="space-y-3">
-              <label className="text-sm font-medium text-muted-foreground block">
-                Exclude Specific Dates
-              </label>
+            <label className="text-sm font-medium text-muted-foreground block">
+              Pick dates to skip
+            </label>
               <div className="flex gap-2">
                 <input
                   type="date"
@@ -284,21 +283,21 @@ export function CloneRoutineModal({
           {/* Summary */}
           <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
             <p className="text-sm font-medium text-foreground mb-1">
-              Summary
+              Here's what'll happen
             </p>
             <p className="text-xs text-muted-foreground">
               {cloneOption === "all" && (
-                <>Applying routine to all {phaseDuration} days of your phase.</>
+                <>Your routine will fill all {phaseDuration} days. You can always adjust individual days later.</>
               )}
               {cloneOption === "weekdays" && (
-                <>Applying routine to weekdays only (excluding weekends).</>
+                <>Your routine will appear on weekdays, leaving weekends open for rest or flexibility.</>
               )}
               {cloneOption === "custom" && (
                 <>
-                  Applying routine to all days except{" "}
+                  Your routine will fill all days except{" "}
                   {excludedDates.length > 0
-                    ? `${excludedDates.length} excluded date${excludedDates.length !== 1 ? "s" : ""}`
-                    : "no dates excluded yet"}
+                    ? `the ${excludedDates.length} ${excludedDates.length === 1 ? "date" : "dates"} you've chosen to skip`
+                    : "— select dates above to exclude them"}
                   .
                 </>
               )}

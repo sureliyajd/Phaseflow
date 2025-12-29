@@ -26,16 +26,16 @@ export function BottomNav() {
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
-  { icon: Calendar, label: "Today", path: "/today" },
+  { icon: Calendar, label: "My Day", path: "/today" },
     {
       icon: CalendarDays,
-      label: "Phase Board",
+      label: "Phase",
       path: "/phase-board",
       isMain: true,
       fallbackPath: "/create",
     },
-  { icon: Clock, label: "Timesheet", path: "/timesheet" },
-  { icon: BarChart3, label: "Analytics", path: "/analytics" },
+  { icon: Clock, label: "Log", path: "/timesheet" },
+  { icon: BarChart3, label: "Insights", path: "/analytics" },
 ];
 
   return (

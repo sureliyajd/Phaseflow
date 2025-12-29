@@ -82,7 +82,7 @@ export function EditPhaseModal({ phase, onClose, onSave }: EditPhaseModalProps) 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-foreground">Edit Phase</h2>
+          <h2 className="text-xl font-bold text-foreground">Adjust Your Phase</h2>
           <Button
             variant="ghost"
             size="icon"
@@ -116,26 +116,28 @@ export function EditPhaseModal({ phase, onClose, onSave }: EditPhaseModalProps) 
 
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
-              Why are you doing this phase? <span className="text-red-500">*</span>
+              What's driving this phase? <span className="text-red-500">*</span>
             </label>
             <textarea
               value={why}
               onChange={(e) => setWhy(e.target.value)}
               rows={3}
               className="input-soft w-full resize-none"
+              placeholder="It's okay if this evolves..."
               required
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
-              Expected Outcome <span className="text-red-500">*</span>
+              What are you hoping for? <span className="text-red-500">*</span>
             </label>
             <textarea
               value={outcome}
               onChange={(e) => setOutcome(e.target.value)}
               rows={3}
               className="input-soft w-full resize-none"
+              placeholder="How might you feel at the end?"
               required
             />
           </div>

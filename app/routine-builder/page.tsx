@@ -337,13 +337,13 @@ export default function RoutineBuilder() {
               <Sparkles className="w-8 h-8 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">
-              Set Up Your Core Routine
+              Design Your Day
             </h1>
             <p className="text-muted-foreground max-w-sm mx-auto mb-2">
-              Build your ideal day by adding routine blocks. This will be your template for the entire phase.
+              Build a day that feels sustainable, not perfect. You can always adjust later.
             </p>
             <p className="text-xs text-muted-foreground">
-              Blocks are sorted by time and cannot overlap
+              Blocks are sorted by time and can't overlap
             </p>
           </div>
         </div>
@@ -571,14 +571,14 @@ export default function RoutineBuilder() {
               <div className="card-soft p-6 text-center">
                 <CheckCircle2 className="w-12 h-12 mx-auto text-primary mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">
-                  Ready to apply your routine?
+                  Looking good so far
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  You've created {coreRoutine.length} routine block{coreRoutine.length !== 1 ? "s" : ""}. 
-                  Apply this routine to your phase to get started.
+                  You've set up {coreRoutine.length} {coreRoutine.length === 1 ? "block" : "blocks"}. 
+                  Ready to bring this routine into your phase?
                 </p>
                 <Button size="xl" className="w-full" onClick={handleApplyRoutine}>
-                  Apply this routine to my phase
+                  Apply to my phase
               </Button>
               </div>
             </div>
@@ -591,10 +591,10 @@ export default function RoutineBuilder() {
                 <Clock className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground mb-2">
-                Start building your ideal day
+                Start shaping your day
               </p>
               <p className="text-sm text-muted-foreground">
-                Add your first routine block to begin
+                Add a block for something that matters to you
               </p>
             </div>
           )}

@@ -53,14 +53,14 @@ export default function Login() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError("That didn't match our records. Give it another try?");
         setIsLoading(false);
       } else {
         // Use window.location for a full page reload to ensure session is loaded
         window.location.href = "/";
       }
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError("Something went wrong on our end. Please try again.");
       setIsLoading(false);
     }
   };
@@ -81,7 +81,7 @@ export default function Login() {
       {/* Title */}
       <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back</h1>
       <p className="text-muted-foreground mb-8">
-        Continue your journey with Phaseflow
+        Ready to continue where you left off?
       </p>
 
       {/* Form */}
@@ -180,7 +180,7 @@ export default function Login() {
           backgroundColor: "color-mix(in srgb, var(--color-accent) 20%, transparent)",
         }}
       >
-        <p className="font-semibold text-foreground">Demo Account</p>
+        <p className="font-semibold text-foreground">Try it out</p>
         <p className="text-sm text-muted-foreground mt-1">
           Email: <span className="font-mono">demo@phaseflow.app</span>
         </p>
@@ -191,7 +191,7 @@ export default function Login() {
 
       {/* Encouragement */}
       <p className="text-muted-foreground mt-8 text-center text-sm">
-        Every day is a fresh start. You've got this.
+        Showing up is the first step. You've already done it.
       </p>
     </div>
   );

@@ -246,7 +246,7 @@ export default function Timesheet() {
         <div className="px-5 pt-8 pb-4">
           <h1 className="text-2xl font-bold text-foreground">Timesheet</h1>
           <p className="text-muted-foreground mt-1">
-            Log interruptions and real-life moments
+            Life happens. This is space to capture it without guilt.
           </p>
         </div>
 
@@ -256,9 +256,9 @@ export default function Timesheet() {
           </div>
         ) : !phase ? (
           <div className="px-5 text-center py-12">
-            <p className="text-muted-foreground mb-2">No active phase found</p>
+            <p className="text-muted-foreground mb-2">Start a phase to begin logging</p>
             <Link href="/create-phase">
-              <Button variant="outline">Create a Phase</Button>
+              <Button variant="outline">Create one when ready</Button>
             </Link>
           </div>
         ) : (
@@ -356,7 +356,7 @@ export default function Timesheet() {
               type="text"
                         value={formTitle}
                         onChange={(e) => setFormTitle(e.target.value)}
-                        placeholder="What interrupted you?"
+                        placeholder="What came up?"
                         className="input-soft w-full"
                         required
                       />
@@ -369,7 +369,7 @@ export default function Timesheet() {
                       <textarea
                         value={formNote}
                         onChange={(e) => setFormNote(e.target.value)}
-                        placeholder="Any additional details..."
+                        placeholder="Add context if helpful..."
                         rows={2}
                         className="input-soft w-full resize-none"
             />
@@ -427,7 +427,7 @@ export default function Timesheet() {
             {sortedDates.length === 0 && !showAddForm ? (
               <div className="px-5 text-center py-12">
                 <p className="text-muted-foreground mb-4">
-                  No entries yet. Log your interruptions and real-life moments.
+                  Nothing logged yet. Whenever something comes up, note it here — it helps you see the full picture.
                 </p>
                 <Button onClick={() => setShowAddForm(true)}>
                   <Plus className="w-4 h-4 mr-2" />

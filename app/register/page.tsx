@@ -46,17 +46,17 @@ export default function Register() {
     setError("");
 
     if (!name || !email || !password) {
-      setError("Please fill in all fields");
+      setError("Just a few details to get you started");
       return;
     }
 
     if (!name.trim()) {
-      setError("Name cannot be empty");
+      setError("We'd love to know what to call you");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Choose a password with at least 6 characters to keep your account safe");
       return;
     }
 
@@ -88,14 +88,14 @@ export default function Register() {
       });
 
       if (result?.error) {
-        setError("Account created but login failed. Please try logging in.");
+        setError("Your account is ready! Head over to login to get started.");
         setIsLoading(false);
       } else {
         // Use window.location for a full page reload to ensure session is loaded
         window.location.href = "/";
       }
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      setError("Something went wrong on our end. Please try again.");
       setIsLoading(false);
     }
   };
@@ -115,10 +115,10 @@ export default function Register() {
 
       {/* Title */}
       <h1 className="text-2xl font-bold text-foreground mb-2">
-        Start your journey
+        Begin something meaningful
       </h1>
       <p className="text-muted-foreground mb-8">
-        Create your Phaseflow account
+        Create your space for intentional growth
       </p>
 
       {/* Form */}
@@ -236,7 +236,7 @@ export default function Register() {
 
       {/* Encouragement */}
       <p className="text-muted-foreground mt-8 text-center text-sm">
-        Small consistent steps lead to big changes.
+        You're taking the first step. That takes courage.
       </p>
     </div>
   );

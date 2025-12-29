@@ -137,9 +137,9 @@ export default function Profile() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+              <h1 className="text-2xl font-bold text-foreground">Your Profile</h1>
               <p className="text-muted-foreground text-sm mt-0.5">
-                Manage your account information
+                Make Phaseflow feel like home
               </p>
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function Profile() {
                 className="input-soft w-full opacity-60 cursor-not-allowed"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Email cannot be changed
+                This is tied to your account
               </p>
             </div>
 
@@ -197,7 +197,7 @@ export default function Profile() {
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell us a bit about yourself..."
+                placeholder="A few words about you (optional)"
                 rows={3}
                 className="input-soft w-full resize-none"
                 maxLength={200}
@@ -221,7 +221,7 @@ export default function Profile() {
                 className="input-soft w-full"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Optional: Your timezone for better scheduling
+                Helps us show times in your local zone
               </p>
             </div>
 
@@ -239,7 +239,7 @@ export default function Profile() {
                 className="input-soft w-full"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Optional: Link to your profile picture
+                Add a picture URL if you'd like
               </p>
             </div>
 

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, ChevronLeft, ChevronRight, Check, X, Loader2 } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Check, X, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { EditDayBlocksModal } from "@/components/phases/EditDayBlocksModal";
 import { format, addDays, subDays } from "date-fns";
 
 const colorMap = {
@@ -41,6 +42,7 @@ export default function Today() {
   const [phase, setPhase] = useState<Phase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingBlockId, setUpdatingBlockId] = useState<string | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
   const completedCount = blocks.filter(
@@ -145,7 +147,7 @@ export default function Today() {
     <AppLayout>
       <div className="min-h-screen">
         <div className="px-5 pt-8 pb-4">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Today</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Your Day</h1>
 
           {/* Date Navigation */}
           <div className="flex items-center justify-between bg-card rounded-2xl p-3 shadow-soft border border-border/50">
@@ -157,7 +159,7 @@ export default function Today() {
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <div className="text-center">
+            <div className="text-center flex-1">
               <p className="font-semibold text-foreground">
                 {format(selectedDate, "EEEE, MMMM d")}
               </p>
@@ -165,14 +167,27 @@ export default function Today() {
                 {completedCount} of {blocks.length} completed
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setSelectedDate(addDays(selectedDate, 1))}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            <div className="flex gap-1">
+              {phase && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setShowEditModal(true)}
+                  title="Edit blocks"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setSelectedDate(addDays(selectedDate, 1))}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -184,15 +199,15 @@ export default function Today() {
             </div>
           ) : !phase ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-2">No active phase found</p>
+              <p className="text-muted-foreground mb-2">You don't have an active phase yet</p>
               <Link href="/create-phase">
-                <Button variant="outline">Create a Phase</Button>
+                <Button variant="outline">Start one when you're ready</Button>
               </Link>
             </div>
           ) : blocks.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                No blocks scheduled for this day
+                Nothing scheduled today. That's okay — take it easy.
               </p>
             </div>
           ) : (
@@ -284,7 +299,7 @@ export default function Today() {
                         className={`mt-3 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium ${
                           isDone
                             ? "bg-success/20 text-success"
-                            : "bg-destructive/20 text-destructive"
+                            : "bg-muted text-muted-foreground"
                         }`}
                       >
                         {isDone ? (
@@ -292,7 +307,7 @@ export default function Today() {
                         ) : (
                           <X className="w-3 h-3" />
                         )}
-                        {isDone ? "DONE" : "SKIPPED"}
+                        {isDone ? "Completed" : "Skipped — that's okay"}
                       </div>
                     )}
                   </div>
@@ -301,6 +316,44 @@ export default function Today() {
             </div>
           )}
         </div>
+
+        {/* Edit Day Blocks Modal */}
+        {showEditModal && phase && (
+          <EditDayBlocksModal
+            phaseId={phase.id}
+            date={dateStr}
+            initialBlocks={blocks.map((b) => ({
+              id: b.id,
+              title: b.title,
+              note: b.note,
+              startTime: b.startTime,
+              endTime: b.endTime,
+              category: b.category || "",
+            }))}
+            onClose={() => setShowEditModal(false)}
+            onSave={() => {
+              setShowEditModal(false);
+              // Refresh blocks
+              const fetchBlocks = async () => {
+                setIsLoading(true);
+                try {
+                  const response = await fetch(`/api/today/blocks?date=${dateStr}`);
+                  const data = await response.json();
+
+                  if (response.ok) {
+                    setBlocks(data.blocks || []);
+                    setPhase(data.phase);
+                  }
+                } catch (error) {
+                  console.error("Error fetching blocks:", error);
+                } finally {
+                  setIsLoading(false);
+                }
+              };
+              fetchBlocks();
+            }}
+          />
+        )}
       </div>
     </AppLayout>
   );

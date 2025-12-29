@@ -18,7 +18,7 @@ export default async function Analytics() {
       <AppLayout>
         <div className="min-h-screen pb-8 flex items-center justify-center">
           <p className="text-muted-foreground text-sm">
-            Please sign in to view your analytics.
+            Sign in to see your journey so far.
           </p>
         </div>
       </AppLayout>
@@ -36,10 +36,10 @@ export default async function Analytics() {
     return (
       <AppLayout>
         <div className="min-h-screen pb-8 flex flex-col items-center justify-center px-5">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Analytics</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Insights</h1>
           <p className="text-muted-foreground text-sm mb-4 text-center max-w-sm">
-            Start a phase to see your streaks, adherence, and timesheet
-            reflections here.
+            Once you start a phase, you'll find gentle reflections on your
+            rhythm and progress here.
           </p>
         </div>
       </AppLayout>
@@ -203,9 +203,9 @@ export default async function Analytics() {
       <div className="min-h-screen pb-8">
         {/* Header */}
         <div className="px-5 pt-8 pb-4">
-          <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
+          <h1 className="text-2xl font-bold text-foreground">Insights</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            A calm overview of how this phase is going.
+            Gentle reflections on your journey. Trends matter more than single days.
           </p>
         </div>
 
@@ -213,7 +213,7 @@ export default async function Analytics() {
         <div className="px-5 grid grid-cols-2 gap-4">
           <StatCard
             icon="Flame"
-            label="Current Streak"
+            label="Current Momentum"
             value={
               typeof phase.currentStreak === "number" && phase.currentStreak >= 0
                 ? `${phase.currentStreak}`
@@ -221,14 +221,14 @@ export default async function Analytics() {
             }
             subtext={
               typeof phase.currentStreak === "number" && phase.currentStreak >= 0
-                ? "Consecutive successful days"
-                : "Start completing your routine to build a streak"
+                ? "Days you've shown up consistently"
+                : "Start your routine to see this grow"
             }
             color="secondary"
           />
           <StatCard
             icon="Target"
-            label="Longest Streak"
+            label="Best Run"
             value={
               typeof phase.longestStreak === "number" && phase.longestStreak >= 0
                 ? `${phase.longestStreak}`
@@ -236,14 +236,14 @@ export default async function Analytics() {
             }
             subtext={
               typeof phase.longestStreak === "number" && phase.longestStreak >= 0
-                ? "Best run this phase"
-                : "Complete days to track your longest streak"
+                ? "Your longest stretch this phase"
+                : "Each day adds to your story"
             }
             color="calm"
           />
           <StatCard
             icon="CheckCircle2"
-            label="Routine Adherence"
+            label="Rhythm"
             value={
               adherencePercentage !== null && adherencePercentage !== undefined
                 ? `${adherencePercentage}%`
@@ -251,21 +251,21 @@ export default async function Analytics() {
             }
             subtext={
               daysWithBlocks > 0
-                ? "Days meeting your 70% goal"
-                : "Start logging your routine to see adherence"
+                ? "Days you met your 70% threshold"
+                : "Complete routines to see your rhythm"
             }
             color="accent"
           />
           <StatCard
             icon="Clock"
-            label="Planned vs Unplanned"
+            label="Balance"
             value={totalTime > 0 ? `${plannedShare}% planned` : "—"}
             subtext={
               totalTime > 0
-                ? `Planned ${formatMinutes(
+                ? `Routine ${formatMinutes(
                     plannedMinutes
-                  )} · Unplanned ${formatMinutes(unplannedMinutes)}`
-                : "No time logged yet"
+                  )} · Life ${formatMinutes(unplannedMinutes)}`
+                : "Your time balance will appear here"
             }
             color="primary"
           />
@@ -275,11 +275,11 @@ export default async function Analytics() {
         <div className="px-5 mt-6">
           <div className="card-soft p-4">
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-              Timesheet by Priority
+              Where life showed up
             </h3>
             {Object.keys(timesheetByPriority).length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No timesheet entries yet for this phase.
+                Nothing logged yet — and that's perfectly fine.
               </p>
             ) : (
               <div className="space-y-2 text-sm">

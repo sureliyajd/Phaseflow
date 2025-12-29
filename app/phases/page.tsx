@@ -97,9 +97,9 @@ export default function PhasesPage() {
               </Button>
             </Link>
             <div className="flex-1">
-              <h1 className="text-xl font-bold text-foreground">All Phases</h1>
+              <h1 className="text-xl font-bold text-foreground">Your Phases</h1>
               <p className="text-sm text-muted-foreground">
-                Manage your phases
+                Every phase is a chapter of your journey
               </p>
             </div>
             <Link href="/create-phase">
@@ -116,7 +116,7 @@ export default function PhasesPage() {
           {activePhase && (
             <div>
               <h2 className="text-sm font-semibold text-muted-foreground mb-3">
-                Active Phase
+                Currently Active
               </h2>
               <PhaseCard
                 phase={activePhase}
@@ -131,7 +131,7 @@ export default function PhasesPage() {
           {archivedPhases.length > 0 && (
             <div>
               <h2 className="text-sm font-semibold text-muted-foreground mb-3">
-                Archived Phases ({archivedPhases.length})
+                Past Phases ({archivedPhases.length})
               </h2>
               <div className="space-y-3">
                 {archivedPhases.map((phase) => (
@@ -155,12 +155,12 @@ export default function PhasesPage() {
                 <Calendar className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground mb-4">
-                No phases yet. Create your first phase to get started.
+                Your journey begins with a single phase. Ready when you are.
               </p>
               <Link href="/create-phase">
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
-                  Create Phase
+                  Begin Your First Phase
                 </Button>
               </Link>
             </div>
@@ -249,7 +249,7 @@ function PhaseCard({ phase, onEdit, onArchive, onActivate, isActive }: PhaseCard
               className="whitespace-nowrap"
             >
               <CheckCircle2 className="w-4 h-4 mr-2" />
-              Activate
+              Resume
             </Button>
           )}
           <Button
@@ -269,7 +269,7 @@ function PhaseCard({ phase, onEdit, onArchive, onActivate, isActive }: PhaseCard
               className="whitespace-nowrap text-muted-foreground hover:text-destructive"
             >
               <Archive className="w-4 h-4 mr-2" />
-              Archive
+              Close
             </Button>
           )}
         </div>

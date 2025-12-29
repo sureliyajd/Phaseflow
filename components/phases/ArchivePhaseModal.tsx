@@ -56,7 +56,7 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="card-soft w-full max-w-md">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-foreground">Archive Phase</h2>
+          <h2 className="text-xl font-bold text-foreground">Close This Phase</h2>
           <Button
             variant="ghost"
             size="icon"
@@ -74,10 +74,11 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
 
           <div className="text-center">
             <p className="text-foreground mb-2">
-              Are you sure you want to archive <strong>{phase.name}</strong>?
+              Ready to close <strong>{phase.name}</strong>?
             </p>
             <p className="text-sm text-muted-foreground">
-              This will end your current phase. You can start a new phase anytime.
+              This phase will be archived, but your progress stays with you. 
+              You can begin a fresh phase whenever you're ready.
             </p>
             {error && (
               <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200">
@@ -105,10 +106,10 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Archiving...
+                  Closing...
                 </>
               ) : (
-                "Archive Phase"
+                "Close Phase"
               )}
             </Button>
           </div>
