@@ -13,6 +13,7 @@ import {
   ChevronUp,
   CheckCircle2,
   Pencil,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -27,6 +28,8 @@ interface Phase {
   durationDays: number;
   startDate: string;
   endDate: string;
+  why: string;
+  outcome: string;
   currentDay: number;
 }
 
@@ -59,6 +62,7 @@ export default function PhaseBoard() {
   const [showArchivePhase, setShowArchivePhase] = useState(false);
   const [editingDay, setEditingDay] = useState<string | null>(null);
   const [editingDayBlocks, setEditingDayBlocks] = useState<DayBlock[]>([]);
+  const [isPhaseIntentExpanded, setIsPhaseIntentExpanded] = useState(true);
 
   useEffect(() => {
     const fetchPhaseData = async () => {
@@ -87,6 +91,14 @@ export default function PhaseBoard() {
           if (today) {
             setExpandedDays(new Set([today.date]));
           }
+
+          // Check if user has seen phase intent section a few times
+          const viewCountKey = `phase-intent-views-${daysData.phase.id}`;
+          const viewCount = parseInt(localStorage.getItem(viewCountKey) || "0", 10);
+          if (viewCount >= 3) {
+            setIsPhaseIntentExpanded(false);
+          }
+          localStorage.setItem(viewCountKey, String(viewCount + 1));
         }
       } catch (error) {
         console.error("Error fetching phase data:", error);
@@ -190,6 +202,40 @@ export default function PhaseBoard() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Phase Intent Section */}
+          <div className="mt-4">
+            <button
+              onClick={() => setIsPhaseIntentExpanded(!isPhaseIntentExpanded)}
+              className="w-full card-soft p-4 text-left hover:bg-muted/30 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">Phase Intent</span>
+                </div>
+                {isPhaseIntentExpanded ? (
+                  <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                )}
+              </div>
+            </button>
+            {isPhaseIntentExpanded && (
+              <div className="card-soft p-4 mt-2 border-t-0 rounded-t-none">
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground mb-1">This phase is driven by:</p>
+                    <p className="text-foreground">{phase.why}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground mb-1">You're hoping for:</p>
+                    <p className="text-foreground">{phase.outcome}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -367,8 +413,8 @@ export default function PhaseBoard() {
               durationDays: phase.durationDays,
               startDate: phase.startDate,
               endDate: phase.endDate,
-              why: "",
-              outcome: "",
+              why: phase.why,
+              outcome: phase.outcome,
               isActive: true,
               currentDay: phase.currentDay,
             }}
@@ -389,8 +435,8 @@ export default function PhaseBoard() {
               durationDays: phase.durationDays,
               startDate: phase.startDate,
               endDate: phase.endDate,
-              why: "",
-              outcome: "",
+              why: phase.why,
+              outcome: phase.outcome,
               isActive: true,
               currentDay: phase.currentDay,
             }}

@@ -98,6 +98,8 @@ export async function GET(request: NextRequest) {
       phase: {
         id: activePhase.id,
         name: activePhase.name,
+        why: activePhase.why,
+        outcome: activePhase.outcome,
       },
       date: dateParam,
     });

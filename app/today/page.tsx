@@ -26,6 +26,8 @@ interface Block {
 interface Phase {
   id: string;
   name: string;
+  why?: string;
+  outcome?: string;
 }
 
 export default function Today() {
@@ -198,9 +200,14 @@ export default function Today() {
             </div>
           ) : blocks.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-2">
                 Nothing scheduled today. That's okay — take it easy.
               </p>
+              {phase?.why && (
+                <p className="text-sm text-foreground mt-3 px-4">
+                  Remember: this phase is about {phase.why.toLowerCase()}. Even small steps count.
+                </p>
+              )}
             </div>
           ) : (
             <div className="space-y-3">

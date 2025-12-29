@@ -21,6 +21,8 @@ interface TimesheetEntry {
 interface Phase {
   id: string;
   name: string;
+  why?: string;
+  outcome?: string;
 }
 
 const priorityColors = {
@@ -33,6 +35,7 @@ export default function Timesheet() {
   const [entries, setEntries] = useState<TimesheetEntry[]>([]);
   const [phase, setPhase] = useState<Phase | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTimesheetHeavy, setIsTimesheetHeavy] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState<TimesheetEntry | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -63,6 +66,7 @@ export default function Timesheet() {
         if (response.ok) {
           setEntries(data.entries || []);
           setPhase(data.phase);
+          setIsTimesheetHeavy(data.isTimesheetHeavy || false);
         } else {
           console.error("Error fetching entries:", data.error);
           setEntries([]);
@@ -176,6 +180,8 @@ export default function Timesheet() {
       const refetchData = await refetchResponse.json();
       if (refetchResponse.ok) {
         setEntries(refetchData.entries || []);
+        setPhase(refetchData.phase);
+        setIsTimesheetHeavy(refetchData.isTimesheetHeavy || false);
       }
     } catch (error) {
       setFormError("An error occurred. Please try again.");
@@ -209,6 +215,8 @@ export default function Timesheet() {
       const refetchData = await refetchResponse.json();
       if (refetchResponse.ok) {
         setEntries(refetchData.entries || []);
+        setPhase(refetchData.phase);
+        setIsTimesheetHeavy(refetchData.isTimesheetHeavy || false);
       }
     } catch (error) {
       alert("An error occurred. Please try again.");
@@ -280,6 +288,16 @@ export default function Timesheet() {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Timesheet-Heavy Day Reminder */}
+            {isTimesheetHeavy && phase?.why && (
+              <div className="mx-5 mb-6 p-4 rounded-xl bg-muted/50 border border-border/30">
+                <p className="text-sm text-foreground">
+                  Life's been full today. That's normal. This phase is about {phase.why.toLowerCase()} — 
+                  your intention still matters, even when days don't go as planned.
+                </p>
               </div>
             )}
 

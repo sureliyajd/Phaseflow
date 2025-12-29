@@ -105,6 +105,8 @@ export async function GET(
         durationDays: phase.durationDays,
         startDate: phase.startDate,
         endDate: phase.endDate,
+        why: phase.why,
+        outcome: phase.outcome,
         currentDay: days.findIndex((d) => d.isToday) + 1 || 1,
       },
       days,

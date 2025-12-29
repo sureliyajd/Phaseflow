@@ -76,10 +76,35 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
             <p className="text-foreground mb-2">
               Ready to close <strong>{phase.name}</strong>?
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               This phase will be archived, but your progress stays with you. 
               You can begin a fresh phase whenever you're ready.
             </p>
+
+            {/* Reflection Summary */}
+            {(phase.why || phase.outcome) && (
+              <div className="mt-6 p-4 rounded-xl bg-muted/50 border border-border/30 text-left">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Looking back</h3>
+                {phase.why && (
+                  <div className="mb-3">
+                    <p className="text-xs text-muted-foreground mb-1">This phase was driven by:</p>
+                    <p className="text-sm text-foreground">{phase.why}</p>
+                  </div>
+                )}
+                {phase.outcome && (
+                  <div className="mb-3">
+                    <p className="text-xs text-muted-foreground mb-1">You were hoping for:</p>
+                    <p className="text-sm text-foreground">{phase.outcome}</p>
+                  </div>
+                )}
+                <div className="mt-4 pt-3 border-t border-border/30">
+                  <p className="text-sm text-foreground italic">
+                    Looking back, how close do you feel you came?
+                  </p>
+                </div>
+              </div>
+            )}
+
             {error && (
               <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200">
                 <p className="text-sm text-red-600">{error}</p>

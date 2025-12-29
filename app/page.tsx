@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Sparkles, Plus, Play, Calendar, ArrowRight, Loader2, Edit2, Archive, List } from "lucide-react";
@@ -41,7 +41,11 @@ export default function Dashboard() {
     streak: number;
     adherence: number | null;
     todayBlocks: { total: number; completed: number };
+    phaseMotivation?: { why: string; outcome: string };
+    hasRecentSkippedPattern?: boolean;
   } | null>(null);
+  const previousStreakRef = useRef<number | null>(null);
+  const [showStreakBreakReminder, setShowStreakBreakReminder] = useState(false);
 
   const fetchActivePhase = async () => {
     try {
@@ -67,6 +71,25 @@ export default function Dashboard() {
       const data = await response.json();
       
       if (response.ok) {
+        // Track streak changes for contextual reminders
+        const previousStreak = previousStreakRef.current;
+        if (previousStreak !== null && previousStreak > 0 && data.streak === 0) {
+          // Streak just broke - check if we should show reminder (once per 24 hours)
+          const reminderKey = `streak-break-reminder-${activePhase?.id}`;
+          const lastShown = localStorage.getItem(reminderKey);
+          const now = Date.now();
+          if (!lastShown || now - parseInt(lastShown, 10) > 24 * 60 * 60 * 1000) {
+            localStorage.setItem(reminderKey, String(now));
+            setShowStreakBreakReminder(true);
+          } else {
+            setShowStreakBreakReminder(false);
+          }
+        } else if (data.streak > 0) {
+          // Streak is active, hide reminder
+          setShowStreakBreakReminder(false);
+        }
+        
+        previousStreakRef.current = data.streak;
         setMetrics(data);
       }
     } catch (error) {
@@ -243,6 +266,29 @@ export default function Dashboard() {
               window.location.href = "/";
             }}
           />
+        )}
+
+        {/* Contextual Reminders */}
+        {metrics && metrics.phaseMotivation && (
+          <>
+            {/* Streak Break Reminder */}
+            {showStreakBreakReminder && metrics.streak === 0 && (
+              <div className="mx-4 sm:mx-5 mt-4 p-3 sm:p-4 rounded-xl bg-muted/50 border border-border/30">
+                <p className="text-sm text-foreground">
+                  This phase started because {metrics.phaseMotivation.why.toLowerCase()}. One day doesn't undo that.
+                </p>
+              </div>
+            )}
+            {/* Multiple Recent Days Skipped Reminder */}
+            {metrics.hasRecentSkippedPattern && (
+              <div className="mx-4 sm:mx-5 mt-4 p-3 sm:p-4 rounded-xl bg-muted/50 border border-border/30">
+                <p className="text-sm text-foreground">
+                  You've had a few challenging days. This phase is about {metrics.phaseMotivation.why.toLowerCase()}. 
+                  Consider adjusting your routine if it feels too much right now — your intention still matters.
+                </p>
+              </div>
+            )}
+          </>
         )}
 
         {/* Today's Progress */}

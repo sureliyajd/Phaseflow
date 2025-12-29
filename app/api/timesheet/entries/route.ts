@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { parseISO, startOfDay, endOfDay } from "date-fns";
+import { parseISO, startOfDay, endOfDay, isToday } from "date-fns";
 
 // GET: Fetch timesheet entries for active phase
 export async function GET(request: NextRequest) {
@@ -58,6 +58,29 @@ export async function GET(request: NextRequest) {
       ],
     });
 
+    // Check if today is timesheet-heavy (many entries, few routine blocks)
+    const today = new Date();
+    const todayStart = startOfDay(today);
+    const todayEnd = endOfDay(today);
+    
+    const todayEntries = entries.filter((entry) => {
+      const entryDate = new Date(entry.date);
+      return isToday(entryDate);
+    });
+
+    const todayRoutineBlocks = await prisma.routineBlock.findMany({
+      where: {
+        phaseId: activePhase.id,
+        isTemplate: false,
+        date: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    });
+
+    const isTimesheetHeavy = todayEntries.length >= 3 && todayRoutineBlocks.length <= 1;
+
     return NextResponse.json({
       entries: entries.map((entry) => ({
         id: entry.id,
@@ -72,7 +95,10 @@ export async function GET(request: NextRequest) {
       phase: {
         id: activePhase.id,
         name: activePhase.name,
+        why: activePhase.why,
+        outcome: activePhase.outcome,
       },
+      isTimesheetHeavy,
     });
   } catch (error) {
     console.error("Error fetching timesheet entries:", error);
