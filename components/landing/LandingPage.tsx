@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/Logo";
 import { ArrowRight, Calendar, Heart, RefreshCw, Lightbulb } from "lucide-react";
+import { fadeUp, cardEntrance, subtleScale, prefersReducedMotion } from "@/lib/motion";
 
 export function LandingPage() {
   const scrollToHowItWorks = () => {
@@ -35,31 +37,58 @@ export function LandingPage() {
       {/* Hero Section */}
       <section className="max-w-4xl mx-auto px-5 py-16 sm:py-24">
         <div className="text-center space-y-6">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight">
+          <motion.h1
+            initial={prefersReducedMotion() ? false : "hidden"}
+            animate="visible"
+            variants={fadeUp}
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground leading-tight"
+          >
             Life moves in phases.
             <br />
             <span className="text-primary">Your routine should too.</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          </motion.h1>
+          <motion.p
+            initial={prefersReducedMotion() ? false : "hidden"}
+            animate="visible"
+            variants={fadeUp}
+            transition={{ delay: 0.1 }}
+            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+          >
             Phaseflow helps you build routines that honor where you are right now, 
             not where you think you should be. No judgment. Just gentle structure.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto">
-                Start your phase
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={scrollToHowItWorks}
-              className="w-full sm:w-auto"
+          </motion.p>
+          <motion.div
+            initial={prefersReducedMotion() ? false : "hidden"}
+            animate="visible"
+            variants={fadeUp}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+          >
+            <motion.div
+              whileHover={prefersReducedMotion() ? {} : { scale: 1.02 }}
+              whileTap={prefersReducedMotion() ? {} : { scale: 0.98 }}
             >
-              See how it works
-            </Button>
-          </div>
+              <Link href="/register">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Start your phase
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div
+              whileHover={prefersReducedMotion() ? {} : { scale: 1.02 }}
+              whileTap={prefersReducedMotion() ? {} : { scale: 0.98 }}
+            >
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={scrollToHowItWorks}
+                className="w-full sm:w-auto"
+              >
+                See how it works
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -88,49 +117,55 @@ export function LandingPage() {
           The Phaseflow Way
         </h2>
         <div className="grid sm:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-card border border-border/50">
-            <div className="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center mb-4">
-              <Calendar className="w-6 h-6 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">One phase at a time</h3>
-            <p className="text-muted-foreground">
-              Focus on a single phase—a period of time where you commit to a particular intention. 
-              No juggling multiple goals. Just one clear direction.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-card border border-border/50">
-            <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
-              <RefreshCw className="w-6 h-6 text-accent" />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">Routines can change</h3>
-            <p className="text-muted-foreground">
-              Your routine isn't set in stone. Adjust it as life shifts. Move blocks around. 
-              Skip days when needed. The phase intention remains, even when the details change.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-card border border-border/50">
-            <div className="w-12 h-12 rounded-xl bg-calm/20 flex items-center justify-center mb-4">
-              <Heart className="w-6 h-6 text-calm" />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">Progress isn't linear</h3>
-            <p className="text-muted-foreground">
-              Some days you'll show up fully. Other days, less so. That's normal. 
-              Phaseflow tracks your journey without turning missed days into moral failures.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-card border border-border/50">
-            <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center mb-4">
-              <Lightbulb className="w-6 h-6 text-secondary-foreground" />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground mb-2">Context matters</h3>
-            <p className="text-muted-foreground">
-              Every phase starts with "why" and "what you're hoping for." These anchors 
-              remind you of your intention when motivation dips. They're your gentle guide back.
-            </p>
-          </div>
+          {[
+            {
+              icon: Calendar,
+              iconBg: "bg-primary-light",
+              iconColor: "text-primary",
+              title: "One phase at a time",
+              description: "Focus on a single phase—a period of time where you commit to a particular intention. No juggling multiple goals. Just one clear direction.",
+            },
+            {
+              icon: RefreshCw,
+              iconBg: "bg-accent/20",
+              iconColor: "text-accent",
+              title: "Routines can change",
+              description: "Your routine isn't set in stone. Adjust it as life shifts. Move blocks around. Skip days when needed. The phase intention remains, even when the details change.",
+            },
+            {
+              icon: Heart,
+              iconBg: "bg-calm/20",
+              iconColor: "text-calm",
+              title: "Progress isn't linear",
+              description: "Some days you'll show up fully. Other days, less so. That's normal. Phaseflow tracks your journey without turning missed days into moral failures.",
+            },
+            {
+              icon: Lightbulb,
+              iconBg: "bg-secondary/20",
+              iconColor: "text-secondary-foreground",
+              title: "Context matters",
+              description: "Every phase starts with \"why\" and \"what you're hoping for.\" These anchors remind you of your intention when motivation dips. They're your gentle guide back.",
+            },
+          ].map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <motion.div
+                key={card.title}
+                initial={prefersReducedMotion() ? false : "hidden"}
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={cardEntrance}
+                custom={index}
+                className="p-6 rounded-2xl bg-card border border-border/50"
+              >
+                <div className={`w-12 h-12 rounded-xl ${card.iconBg} flex items-center justify-center mb-4`}>
+                  <Icon className={`w-6 h-6 ${card.iconColor}`} />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">{card.title}</h3>
+                <p className="text-muted-foreground">{card.description}</p>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 

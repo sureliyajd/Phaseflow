@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { Sparkles, Plus, Play, Calendar, ArrowRight, Loader2, Edit2, Archive, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { EditPhaseModal } from "@/components/phases/EditPhaseModal";
 import { ArchivePhaseModal } from "@/components/phases/ArchivePhaseModal";
 import { format } from "date-fns";
+import { pageTransition, progressFill, prefersReducedMotion } from "@/lib/motion";
 
 interface Phase {
   id: string;
@@ -163,7 +165,12 @@ export default function Dashboard() {
   // Active phase dashboard
   return (
     <AppLayout>
-      <div className="min-h-screen pb-8">
+      <motion.div
+        initial={prefersReducedMotion() ? false : "initial"}
+        animate="animate"
+        variants={pageTransition}
+        className="min-h-screen pb-8"
+      >
         {/* Header */}
         <div className="px-4 sm:px-5 pt-6 sm:pt-8 pb-4">
           <div className="flex items-start justify-between gap-3">
@@ -307,11 +314,12 @@ export default function Dashboard() {
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <div className="h-3 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full transition-all duration-500"
-                      style={{
-                        width: `${Math.min(100, Math.max(0, (metrics.todayBlocks.completed / metrics.todayBlocks.total) * 100))}%`,
-                      }}
+                    <motion.div
+                      className="h-full bg-primary rounded-full"
+                      initial={prefersReducedMotion() ? false : "initial"}
+                      animate="animate"
+                      variants={progressFill}
+                      custom={Math.min(100, Math.max(0, (metrics.todayBlocks.completed / metrics.todayBlocks.total) * 100))}
                     />
                   </div>
                 </div>
@@ -383,7 +391,7 @@ export default function Dashboard() {
             Progress isn't always visible. Trust the process.
           </p>
         </div>
-      </div>
+      </motion.div>
     </AppLayout>
   );
 }

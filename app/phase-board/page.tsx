@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -21,6 +22,7 @@ import { format, parseISO, isToday, isPast, isFuture } from "date-fns";
 import { EditPhaseModal } from "@/components/phases/EditPhaseModal";
 import { ArchivePhaseModal } from "@/components/phases/ArchivePhaseModal";
 import { EditDayBlocksModal } from "@/components/phases/EditDayBlocksModal";
+import { pageTransition, expandCollapse, cardEntrance, fadeUp, prefersReducedMotion } from "@/lib/motion";
 
 interface Phase {
   id: string;
@@ -149,7 +151,12 @@ export default function PhaseBoard() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen pb-8">
+      <motion.div
+        initial={prefersReducedMotion() ? false : "initial"}
+        animate="animate"
+        variants={pageTransition}
+        className="min-h-screen pb-8"
+      >
         {/* Header */}
         <div className="px-5 pt-8 pb-4">
           <div className="flex items-center gap-4 mb-4">
@@ -222,20 +229,28 @@ export default function PhaseBoard() {
                 )}
               </div>
             </button>
-            {isPhaseIntentExpanded && (
-              <div className="card-soft p-4 mt-2 border-t-0 rounded-t-none">
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <p className="text-muted-foreground mb-1">This phase is driven by:</p>
-                    <p className="text-foreground">{phase.why}</p>
+            <AnimatePresence>
+              {isPhaseIntentExpanded && (
+                <motion.div
+                  initial={prefersReducedMotion() ? false : "collapsed"}
+                  animate="expanded"
+                  exit="collapsed"
+                  variants={expandCollapse}
+                  className="card-soft p-4 mt-2 border-t-0 rounded-t-none overflow-hidden"
+                >
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-muted-foreground mb-1">This phase is driven by:</p>
+                      <p className="text-foreground">{phase.why}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">You're hoping for:</p>
+                      <p className="text-foreground">{phase.outcome}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground mb-1">You're hoping for:</p>
-                    <p className="text-foreground">{phase.outcome}</p>
-                  </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -320,20 +335,31 @@ export default function PhaseBoard() {
                 </div>
 
                 {/* Day Blocks */}
-                {isExpanded && (
-                  <div className="px-3 pb-3 space-y-1.5 border-t border-border/30 pt-3">
-                    {hasBlocks ? (
-                      day.blocks
-                        .sort((a, b) => {
-                          const aTime = a.startTime.split(":").map(Number);
-                          const bTime = b.startTime.split(":").map(Number);
-                          return aTime[0] * 60 + aTime[1] - (bTime[0] * 60 + bTime[1]);
-                        })
-                        .map((block) => (
-                          <div
-                            key={block.id}
-                            className="p-2.5 rounded-lg bg-muted/30 border border-border/30"
-                          >
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={prefersReducedMotion() ? false : "collapsed"}
+                      animate="expanded"
+                      exit="collapsed"
+                      variants={expandCollapse}
+                      className="px-3 pb-3 space-y-1.5 border-t border-border/30 pt-3 overflow-hidden"
+                    >
+                      {hasBlocks ? (
+                        day.blocks
+                          .sort((a, b) => {
+                            const aTime = a.startTime.split(":").map(Number);
+                            const bTime = b.startTime.split(":").map(Number);
+                            return aTime[0] * 60 + aTime[1] - (bTime[0] * 60 + bTime[1]);
+                          })
+                          .map((block, blockIndex) => (
+                            <motion.div
+                              key={block.id}
+                              initial={prefersReducedMotion() ? false : "hidden"}
+                              animate="visible"
+                              variants={cardEntrance}
+                              custom={blockIndex}
+                              className="p-2.5 rounded-lg bg-muted/30 border border-border/30"
+                            >
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium text-sm text-foreground">
@@ -358,28 +384,34 @@ export default function PhaseBoard() {
                                 )}
                               </div>
                             </div>
-                          </div>
-                        ))
-                    ) : (
-                      <div className="text-center py-4">
-                        <p className="text-xs text-muted-foreground mb-2">
-                          A quiet day — nothing planned yet
-                        </p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setEditingDay(day.date);
-                            setEditingDayBlocks([]);
-                          }}
+                          </motion.div>
+                          ))
+                      ) : (
+                        <motion.div
+                          initial={prefersReducedMotion() ? false : "hidden"}
+                          animate="visible"
+                          variants={fadeUp}
+                          className="text-center py-4"
                         >
-                          <Pencil className="w-3.5 h-3.5 mr-1.5" />
-                          Add something
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                          <p className="text-xs text-muted-foreground mb-2">
+                            A quiet day — nothing planned yet
+                          </p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingDay(day.date);
+                              setEditingDayBlocks([]);
+                            }}
+                          >
+                            <Pencil className="w-3.5 h-3.5 mr-1.5" />
+                            Add something
+                          </Button>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
@@ -446,7 +478,7 @@ export default function PhaseBoard() {
             }}
           />
         )}
-      </div>
+      </motion.div>
     </AppLayout>
   );
 }

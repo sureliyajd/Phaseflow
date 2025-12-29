@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Calendar, ChevronLeft, ChevronRight, Check, X, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { EditDayBlocksModal } from "@/components/phases/EditDayBlocksModal";
 import { format, addDays, subDays } from "date-fns";
 import { getColorMap, type BlockColor } from "@/lib/block-colors";
+import { pageTransition, cardEntrance, prefersReducedMotion } from "@/lib/motion";
 
 const colorMap = getColorMap();
 
@@ -139,7 +141,12 @@ export default function Today() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen">
+      <motion.div
+        initial={prefersReducedMotion() ? false : "initial"}
+        animate="animate"
+        variants={pageTransition}
+        className="min-h-screen"
+      >
         <div className="px-5 pt-8 pb-4">
           <h1 className="text-2xl font-bold text-foreground mb-4">Your Day</h1>
 
@@ -219,14 +226,15 @@ export default function Today() {
                 const isUpdating = updatingBlockId === block.id;
 
                 return (
-                  <div
+                  <motion.div
                     key={block.id}
+                    initial={prefersReducedMotion() ? false : "hidden"}
+                    animate="visible"
+                    variants={cardEntrance}
+                    custom={index}
                     className={`p-4 rounded-2xl border ${colors.bg} ${colors.border} ${
                       isDone || isSkipped ? "opacity-60" : ""
-                    } transition-all duration-200`}
-                    style={{
-                      animationDelay: `${index * 50}ms`,
-                    }}
+                    }`}
                   >
                     <div className="flex items-start gap-4">
                       <div
@@ -309,12 +317,12 @@ export default function Today() {
                         {isDone ? "Completed" : "Skipped — that's okay"}
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Edit Day Blocks Modal */}
         {showEditModal && phase && (
