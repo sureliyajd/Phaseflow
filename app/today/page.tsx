@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, ChevronLeft, ChevronRight, Check, X, Edit2, Trash2 } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { EditBlockModal } from "@/components/routine/EditBlockModal";
 import { format, addDays, subDays } from "date-fns";
 
 const colorMap = {
@@ -24,62 +23,122 @@ type BlockStatus = "DONE" | "SKIPPED" | "PENDING";
 interface Block {
   id: string;
   title: string;
-  description: string;
-  time: string;
-  duration: string;
-  color: keyof typeof colorMap;
+  note: string | null;
+  startTime: string;
+  endTime: string;
+  category: string | null;
   executionStatus: BlockStatus;
 }
 
-// Mock data
-const mockBlocks: Block[] = [
-  {
-    id: "1",
-    title: "Morning Meditation",
-    description: "15 minutes of mindfulness",
-    time: "7:00 AM",
-    duration: "15 min",
-    color: "calm",
-    executionStatus: "DONE",
-  },
-  {
-    id: "2",
-    title: "Deep Work Session",
-    description: "Focus on important project",
-    time: "9:00 AM",
-    duration: "2 hours",
-    color: "primary",
-    executionStatus: "PENDING",
-  },
-  {
-    id: "3",
-    title: "Exercise",
-    description: "Morning workout",
-    time: "12:30 PM",
-    duration: "45 min",
-    color: "accent",
-    executionStatus: "PENDING",
-  },
-];
+interface Phase {
+  id: string;
+  name: string;
+}
 
 export default function Today() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [blocks, setBlocks] = useState<Block[]>(mockBlocks);
-  const [editingBlock, setEditingBlock] = useState<Block | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [phase, setPhase] = useState<Phase | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [updatingBlockId, setUpdatingBlockId] = useState<string | null>(null);
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
-  const todayBlocks = blocks; // In real app, filter by date
-  const completedCount = todayBlocks.filter(
+  const completedCount = blocks.filter(
     (b) => b.executionStatus === "DONE"
   ).length;
 
-  const handleStatus = (blockId: string, status: BlockStatus) => {
+  // Fetch blocks for selected date
+  useEffect(() => {
+    const fetchBlocks = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/today/blocks?date=${dateStr}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setBlocks(data.blocks || []);
+          setPhase(data.phase);
+        } else {
+          console.error("Error fetching blocks:", data.error);
+          setBlocks([]);
+        }
+      } catch (error) {
+        console.error("Error fetching blocks:", error);
+        setBlocks([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBlocks();
+  }, [dateStr]);
+
+  const formatTime = (time: string): string => {
+    const [hours, minutes] = time.split(":");
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
+  const handleStatus = async (blockId: string, status: "DONE" | "SKIPPED") => {
+    setUpdatingBlockId(blockId);
+
+    // Optimistically update UI
     setBlocks((prev) =>
       prev.map((b) =>
         b.id === blockId ? { ...b, executionStatus: status } : b
       )
     );
+
+    try {
+      const response = await fetch("/api/today/executions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          routineBlockId: blockId,
+          date: dateStr,
+          status,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Error updating execution:", data.error);
+        // Revert optimistic update on error
+        setBlocks((prev) =>
+          prev.map((b) =>
+            b.id === blockId
+              ? { ...b, executionStatus: "PENDING" as BlockStatus }
+              : b
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating execution:", error);
+      // Revert optimistic update on error
+      setBlocks((prev) =>
+        prev.map((b) =>
+          b.id === blockId
+            ? { ...b, executionStatus: "PENDING" as BlockStatus }
+            : b
+        )
+      );
+    } finally {
+      setUpdatingBlockId(null);
+    }
+  };
+
+  // Determine color based on category or use default
+  const getBlockColor = (category: string | null): keyof typeof colorMap => {
+    if (!category) return "primary";
+    // Simple hash-based color assignment
+    const colors: (keyof typeof colorMap)[] = ["primary", "accent", "calm", "secondary"];
+    const hash = category.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
   };
 
   return (
@@ -103,7 +162,7 @@ export default function Today() {
                 {format(selectedDate, "EEEE, MMMM d")}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {completedCount} of {todayBlocks.length} completed
+                {completedCount} of {blocks.length} completed
               </p>
             </div>
             <Button
@@ -118,7 +177,19 @@ export default function Today() {
         </div>
 
         <div className="px-5 pb-8">
-          {todayBlocks.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary mb-4" />
+              <p className="text-muted-foreground">Loading blocks...</p>
+            </div>
+          ) : !phase ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-2">No active phase found</p>
+              <Link href="/create-phase">
+                <Button variant="outline">Create a Phase</Button>
+              </Link>
+            </div>
+          ) : blocks.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
                 No blocks scheduled for this day
@@ -126,10 +197,12 @@ export default function Today() {
             </div>
           ) : (
             <div className="space-y-3">
-              {todayBlocks.map((block, index) => {
-                const colors = colorMap[block.color];
+              {blocks.map((block, index) => {
+                const blockColor = getBlockColor(block.category);
+                const colors = colorMap[blockColor];
                 const isDone = block.executionStatus === "DONE";
                 const isSkipped = block.executionStatus === "SKIPPED";
+                const isUpdating = updatingBlockId === block.id;
 
                 return (
                   <div
@@ -153,60 +226,54 @@ export default function Today() {
                         >
                           {block.title}
                         </h3>
-                        {block.description && (
+                        {block.note && (
                           <p className="text-sm text-muted-foreground mt-1">
-                            {block.description}
+                            {block.note}
                           </p>
                         )}
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {block.time} · {block.duration}
-                        </p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                          <Calendar className="w-3 h-3" />
+                          <span>
+                            {formatTime(block.startTime)} - {formatTime(block.endTime)}
+                          </span>
+                          {block.category && (
+                            <>
+                              <span>·</span>
+                              <span>{block.category}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
 
                       {/* Action Buttons */}
                       <div className="flex gap-2">
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary"
-                          onClick={() => {
-                            setEditingBlock(block);
-                            setShowEditModal(true);
-                          }}
-                          title="Edit Block"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-10 w-10 rounded-xl text-muted-foreground hover:text-destructive"
-                          onClick={() => {
-                            if (confirm("Delete this block?")) {
-                              setBlocks(blocks.filter((b) => b.id !== block.id));
-                            }
-                          }}
-                          title="Delete Block"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                        <Button
                           variant={isDone ? "default" : "outline"}
                           size="icon"
                           className="h-10 w-10 rounded-xl"
                           onClick={() => handleStatus(block.id, "DONE")}
+                          disabled={isUpdating}
                           title="Mark as Done"
                         >
-                          <Check className="w-5 h-5" />
+                          {isUpdating && isDone ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <Check className="w-5 h-5" />
+                          )}
                         </Button>
                         <Button
                           variant={isSkipped ? "destructive" : "outline"}
                           size="icon"
                           className="h-10 w-10 rounded-xl"
                           onClick={() => handleStatus(block.id, "SKIPPED")}
+                          disabled={isUpdating}
                           title="Skip"
                         >
-                          <X className="w-5 h-5" />
+                          {isUpdating && isSkipped ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <X className="w-5 h-5" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -234,24 +301,6 @@ export default function Today() {
             </div>
           )}
         </div>
-
-        {/* Edit Block Modal */}
-        {showEditModal && editingBlock && (
-          <EditBlockModal
-            block={editingBlock}
-            onClose={() => {
-              setShowEditModal(false);
-              setEditingBlock(null);
-            }}
-            onSave={(updatedBlock) => {
-              setBlocks((prev) =>
-                prev.map((b) => (b.id === editingBlock.id ? { ...b, ...updatedBlock } : b))
-              );
-              setShowEditModal(false);
-              setEditingBlock(null);
-            }}
-          />
-        )}
       </div>
     </AppLayout>
   );

@@ -1,20 +1,42 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Plus, Clock, BarChart3 } from "lucide-react";
+import { Home, Calendar, CalendarDays, Clock, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Calendar, label: "Today", path: "/today" },
-  { icon: Plus, label: "Create", path: "/create", isMain: true },
-  { icon: Clock, label: "Timesheet", path: "/timesheet" },
-  { icon: BarChart3, label: "Analytics", path: "/analytics" },
-];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const [hasActivePhase, setHasActivePhase] = useState(false);
+
+  useEffect(() => {
+    const checkActivePhase = async () => {
+      try {
+        const response = await fetch("/api/phases/active");
+        const data = await response.json();
+        setHasActivePhase(response.ok && !!data.phase);
+      } catch (error) {
+        setHasActivePhase(false);
+      }
+    };
+
+    checkActivePhase();
+  }, [pathname]);
+
+  const navItems = [
+    { icon: Home, label: "Home", path: "/" },
+    { icon: Calendar, label: "Today", path: "/today" },
+    {
+      icon: CalendarDays,
+      label: "Phase Board",
+      path: "/phase-board",
+      isMain: true,
+      fallbackPath: "/create",
+    },
+    { icon: Clock, label: "Timesheet", path: "/timesheet" },
+    { icon: BarChart3, label: "Analytics", path: "/analytics" },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border/50 pb-2">
@@ -24,10 +46,11 @@ export function BottomNav() {
           const Icon = item.icon;
 
           if (item.isMain) {
+            const mainPath = hasActivePhase ? item.path : (item.fallbackPath || item.path);
             return (
               <Link
                 key={item.path}
-                href={item.path}
+                href={mainPath}
                 className="relative -mt-6"
               >
                 <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-elevated transition-transform active:scale-95">

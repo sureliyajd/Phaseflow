@@ -103,8 +103,8 @@ export default function CreatePhase() {
         return;
       }
 
-      // Redirect to dashboard after successful creation with refresh
-      window.location.href = "/";
+      // Redirect to routine builder for onboarding
+      router.push("/routine-builder");
     } catch (error) {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
