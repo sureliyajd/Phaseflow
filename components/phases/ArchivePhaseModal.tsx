@@ -54,8 +54,8 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto pb-24 md:pb-4">
-        <div className="flex items-center justify-between mb-6">
+      <div className="card-soft w-full max-w-md max-h-[calc(100vh-8rem)] md:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between mb-6 px-6 pt-6 flex-shrink-0">
           <h2 className="text-xl font-bold text-foreground">Close This Phase</h2>
           <Button
             variant="ghost"
@@ -67,6 +67,7 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
           </Button>
         </div>
 
+        <div className="flex-1 overflow-y-auto px-6 pb-4">
         <div className="space-y-4">
           <div className="w-16 h-16 mx-auto rounded-2xl bg-muted flex items-center justify-center mb-4">
             <Archive className="w-8 h-8 text-muted-foreground" />
@@ -112,7 +113,10 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
             )}
           </div>
 
-          <div className="flex gap-3 pt-4 pb-4 md:pb-0">
+        </div>
+        </div>
+
+          <div className="flex gap-3 px-6 py-4 border-t border-border/30 flex-shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -138,7 +142,6 @@ export function ArchivePhaseModal({ phase, onClose, onConfirm }: ArchivePhaseMod
               )}
             </Button>
           </div>
-        </div>
       </div>
     </div>
   );

@@ -11,8 +11,8 @@ interface ApplyChangesDialogProps {
 export function ApplyChangesDialog({ onClose, onApply }: ApplyChangesDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-md pb-24 md:pb-4">
-        <div className="flex items-center justify-between mb-6">
+      <div className="card-soft w-full max-w-md max-h-[calc(100vh-8rem)] md:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between mb-6 px-6 pt-6 flex-shrink-0">
           <h2 className="text-xl font-bold text-foreground">Apply Changes</h2>
           <Button
             variant="ghost"
@@ -24,6 +24,7 @@ export function ApplyChangesDialog({ onClose, onApply }: ApplyChangesDialogProps
           </Button>
         </div>
 
+        <div className="flex-1 overflow-y-auto px-6 pb-4">
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground mb-4">
             How would you like to apply these changes?
@@ -80,7 +81,10 @@ export function ApplyChangesDialog({ onClose, onApply }: ApplyChangesDialogProps
             </div>
           </button>
 
-          <div className="flex gap-3 pt-4 pb-4 md:pb-0">
+        </div>
+        </div>
+
+          <div className="flex gap-3 px-6 py-4 border-t border-border/30 flex-shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -90,7 +94,6 @@ export function ApplyChangesDialog({ onClose, onApply }: ApplyChangesDialogProps
               Cancel
             </Button>
           </div>
-        </div>
       </div>
     </div>
   );

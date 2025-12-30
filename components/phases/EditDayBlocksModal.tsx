@@ -268,8 +268,8 @@ export function EditDayBlocksModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-2xl max-h-[90vh] overflow-y-auto pb-24 md:pb-4">
-        <div className="flex items-center justify-between mb-6">
+      <div className="card-soft w-full max-w-2xl max-h-[calc(100vh-8rem)] md:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between mb-6 px-6 pt-6 flex-shrink-0">
           <div>
             <h2 className="text-xl font-bold text-foreground">Adjust This Day</h2>
             <p className="text-sm text-muted-foreground mt-1">
@@ -287,6 +287,7 @@ export function EditDayBlocksModal({
           </Button>
         </div>
 
+        <div className="flex-1 overflow-y-auto px-6 pb-4">
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-start gap-2">
             <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
@@ -571,8 +572,10 @@ export function EditDayBlocksModal({
           Add Block
         </Button>
 
+        </div>
+
         {/* Actions */}
-        <div className="flex gap-3 pb-4 md:pb-0">
+        <div className="flex gap-3 px-6 py-4 border-t border-border/30 flex-shrink-0">
           <Button
             type="button"
             variant="outline"

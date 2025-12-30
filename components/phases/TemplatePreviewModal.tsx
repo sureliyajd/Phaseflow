@@ -17,7 +17,7 @@ export function TemplatePreviewModal({
 }: TemplatePreviewModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-card rounded-2xl shadow-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto pb-24 md:pb-0">
+      <div className="bg-card rounded-2xl shadow-elevated max-w-2xl w-full max-h-[calc(100vh-8rem)] md:max-h-[90vh] overflow-y-auto flex flex-col">
         {/* Header */}
         <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
@@ -35,7 +35,7 @@ export function TemplatePreviewModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 flex-1 overflow-y-auto">
           {/* Template Info */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export function TemplatePreviewModal({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-card border-t border-border px-6 py-4 pb-24 md:pb-4 flex gap-3 rounded-b-2xl">
+        <div className="bg-card border-t border-border px-6 py-4 pb-6 md:pb-4 flex gap-3 rounded-b-2xl flex-shrink-0">
           <Button variant="outline" onClick={onClose} className="flex-1">
             Cancel
           </Button>

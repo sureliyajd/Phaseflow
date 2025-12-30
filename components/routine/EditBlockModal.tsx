@@ -58,8 +58,8 @@ export function EditBlockModal({ block, onClose, onSave }: EditBlockModalProps) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto pb-24 md:pb-4">
-        <div className="flex items-center justify-between mb-6">
+      <div className="card-soft w-full max-w-md max-h-[calc(100vh-8rem)] md:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between mb-6 px-6 pt-6 flex-shrink-0">
           <h2 className="text-xl font-bold text-foreground">Edit Block</h2>
           <Button
             variant="ghost"
@@ -71,7 +71,8 @@ export function EditBlockModal({ block, onClose, onSave }: EditBlockModalProps) 
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col">
+          <div className="space-y-4 flex-1">
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               Title <span className="text-red-500">*</span>
@@ -149,7 +150,9 @@ export function EditBlockModal({ block, onClose, onSave }: EditBlockModalProps) 
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 pb-4 md:pb-0">
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t border-border/30 mt-4 flex-shrink-0">
             <Button
               type="button"
               variant="outline"
