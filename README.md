@@ -7,6 +7,29 @@
 
 ---
 
+## Table of Contents
+
+- [Screenshots](#screenshots)
+- **For busy visitors**
+  - [Quick Glance (TL;DR)](#quick-glance-tldr)
+  - [Why Phaseflow?](#why-phaseflow)
+- **For people who might use Phaseflow**
+  - [Core Concepts](#core-concepts)
+  - [User Journeys](#user-journeys)
+- **For recruiters & reviewers**
+  - [What This Project Demonstrates](#what-this-project-demonstrates)
+  - [Highlights of the Implementation](#highlights-of-the-implementation)
+- **For developers**
+  - [Tech Stack](#tech-stack)
+  - [Project Structure](#project-structure)
+  - [Running the Project Locally](#running-the-project-locally)
+  - [Environment Variables](#environment-variables)
+  - [Database & Migrations](#database--migrations)
+  - [Key Flows (Architecture-Level)](#key-flows-architecture-level)
+- [Future Improvements & Ideas](#future-improvements--ideas)
+
+---
+
 ## Screenshots
 
 ### Authentication & Onboarding
@@ -46,29 +69,6 @@
 ![Analytics](./docs/screenshots/analytics.png)
 
 </div>
-
----
-
-## Table of Contents
-
-- [Screenshots](#screenshots)
-- **For busy visitors**
-  - [Quick Glance (TL;DR)](#quick-glance-tldr)
-  - [Why Phaseflow?](#why-phaseflow)
-- **For people who might use Phaseflow**
-  - [Core Concepts](#core-concepts)
-  - [User Journeys](#user-journeys)
-- **For recruiters & reviewers**
-  - [What This Project Demonstrates](#what-this-project-demonstrates)
-  - [Highlights of the Implementation](#highlights-of-the-implementation)
-- **For developers**
-  - [Tech Stack](#tech-stack)
-  - [Project Structure](#project-structure)
-  - [Running the Project Locally](#running-the-project-locally)
-  - [Environment Variables](#environment-variables)
-  - [Database & Migrations](#database--migrations)
-  - [Key Flows (Architecture-Level)](#key-flows-architecture-level)
-- [Future Improvements & Ideas](#future-improvements--ideas)
 
 ---
 
