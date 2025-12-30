@@ -101,7 +101,7 @@ export function LandingPage() {
           </p>
           <p className="text-lg">
             But here's what most tools miss: your motivation changes. Your capacity shifts. 
-            What worked last month might not fit this month. And that's not a failure—it's human.
+            What worked last month might not fit this month. And that's not a failure - it's human.
           </p>
           <p className="text-lg">
             Routines break not because of laziness, but because they're misaligned with 
@@ -123,7 +123,7 @@ export function LandingPage() {
               iconBg: "bg-primary-light",
               iconColor: "text-primary",
               title: "One phase at a time",
-              description: "Focus on a single phase—a period of time where you commit to a particular intention. No juggling multiple goals. Just one clear direction.",
+              description: "Focus on a single phase - a period of time where you commit to a particular intention. No juggling multiple goals. Just one clear direction.",
             },
             {
               icon: RefreshCw,
@@ -196,7 +196,7 @@ export function LandingPage() {
               <h3 className="text-xl font-semibold text-foreground mb-2">Create or choose a routine</h3>
               <p className="text-muted-foreground">
                 Build your daily blocks or start from a template. Schedule what matters, 
-                when it matters. Keep it realistic—this isn't about perfection.
+                when it matters. Keep it realistic - this isn't about perfection.
               </p>
             </div>
           </div>
@@ -242,7 +242,7 @@ export function LandingPage() {
             </p>
             <p className="text-lg">
               We show you supportive reminders that reference your original intention when confidence dips. 
-              We respect that real life happens—timesheets capture the unexpected without judgment. 
+              We respect that real life happens - timesheets capture the unexpected without judgment. 
               We don't weaponize streaks. We don't shame you for adjusting.
             </p>
             <p className="text-lg font-medium text-foreground">

@@ -90,6 +90,7 @@ export async function GET(request: NextRequest) {
       startTime: block.startTime,
       endTime: block.endTime,
       category: block.category?.name || null,
+      color: block.color || "primary",
       executionStatus: statusMap.get(block.id) || ("PENDING" as const),
     }));
 

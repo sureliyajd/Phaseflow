@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Clock, Tag, FileText, Calendar, Loader2, AlertCircle } from "lucide-react";
+import { X, Plus, Trash2, Clock, Tag, FileText, Calendar, Loader2, AlertCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, eachDayOfInterval, startOfDay, endOfDay, isToday, isPast } from "date-fns";
 import { colorOptions, type BlockColor, getColorMap } from "@/lib/block-colors";
 
 interface RoutineBlock {
@@ -12,11 +12,19 @@ interface RoutineBlock {
   note?: string | null;
   startTime: string;
   endTime: string;
-  category: string;
-  color?: BlockColor;
+  category: string | null;
+  color?: BlockColor | string;
 }
 
 const colorMap = getColorMap();
+
+// Helper to get color from category (consistent with other parts of the app)
+const getBlockColorFromCategory = (category: string | null | undefined): BlockColor => {
+  if (!category) return "primary";
+  const colors: BlockColor[] = ["primary", "accent", "calm", "secondary", "purple", "green", "orange", "pink", "indigo", "red"];
+  const hash = category.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
+};
 
 interface EditDayBlocksModalProps {
   phaseId: string;
@@ -42,6 +50,8 @@ export function EditDayBlocksModal({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [timeErrors, setTimeErrors] = useState<Record<number, string>>({});
+  const [phaseDates, setPhaseDates] = useState<Date[]>([]);
+  const [isLoadingPhase, setIsLoadingPhase] = useState(false);
 
   useEffect(() => {
     setBlocks(
@@ -49,7 +59,7 @@ export function EditDayBlocksModal({
         ? initialBlocks.map((b) => ({
             ...b,
             category: b.category || "",
-            color: (b as any).color || "primary",
+            color: (b as any).color || getBlockColorFromCategory(b.category),
           }))
         : [
             {
@@ -68,6 +78,32 @@ export function EditDayBlocksModal({
     ) as string[];
     setCategories(uniqueCategories);
   }, [initialBlocks]);
+
+  // Fetch phase dates for multi-select date picker
+  useEffect(() => {
+    const fetchPhaseDates = async () => {
+      if (scope === "selected") {
+        setIsLoadingPhase(true);
+        try {
+          const response = await fetch(`/api/phases/${phaseId}`);
+          const data = await response.json();
+          
+          if (response.ok && data.phase) {
+            const start = startOfDay(new Date(data.phase.startDate));
+            const end = endOfDay(new Date(data.phase.endDate));
+            const allDates = eachDayOfInterval({ start, end });
+            setPhaseDates(allDates);
+          }
+        } catch (error) {
+          console.error("Error fetching phase dates:", error);
+        } finally {
+          setIsLoadingPhase(false);
+        }
+      }
+    };
+
+    fetchPhaseDates();
+  }, [phaseId, scope]);
 
   const validateTimeRange = (startTime: string, endTime: string): string | null => {
     const [startH, startM] = startTime.split(":").map(Number);
@@ -197,7 +233,7 @@ export function EditDayBlocksModal({
               note: b.note?.trim() || null,
               startTime: b.startTime,
               endTime: b.endTime,
-              category: b.category.trim() || "Uncategorized",
+              category: b.category?.trim() || "Uncategorized",
               color: b.color || "primary",
             })),
             scope,
@@ -232,7 +268,7 @@ export function EditDayBlocksModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="card-soft w-full max-w-2xl max-h-[90vh] overflow-y-auto pb-24 md:pb-4">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-bold text-foreground">Adjust This Day</h2>
@@ -302,25 +338,63 @@ export function EditDayBlocksModal({
               <span className="text-sm text-foreground">Specific dates I choose</span>
             </label>
             {scope === "selected" && (
-              <div className="ml-6 mt-2">
-                <input
-                  type="text"
-                  placeholder="Enter dates (comma-separated, YYYY-MM-DD)"
-                  value={selectedDates.join(", ")}
-                  onChange={(e) =>
-                    setSelectedDates(
-                      e.target.value
-                        .split(",")
-                        .map((d) => d.trim())
-                        .filter(Boolean)
-                    )
-                  }
-                  className="input-soft w-full text-sm"
-                  disabled={isSaving}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Format: YYYY-MM-DD, YYYY-MM-DD, ...
-                </p>
+              <div className="ml-6 mt-3">
+                {isLoadingPhase ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Select dates from your phase duration:
+                    </p>
+                    <div className="max-h-48 overflow-y-auto border border-border/50 rounded-lg p-2 bg-muted/20">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {phaseDates.map((date) => {
+                          const dateStr = format(date, "yyyy-MM-dd");
+                          const isSelected = selectedDates.includes(dateStr);
+                          const isDateToday = isToday(date);
+                          const isDatePast = isPast(date) && !isToday(date);
+                          
+                          return (
+                            <button
+                              key={dateStr}
+                              type="button"
+                              onClick={() => {
+                                if (isSelected) {
+                                  setSelectedDates(selectedDates.filter((d) => d !== dateStr));
+                                } else {
+                                  setSelectedDates([...selectedDates, dateStr]);
+                                }
+                              }}
+                              disabled={isSaving}
+                              className={`p-2 rounded-lg text-xs font-medium transition-all ${
+                                isSelected
+                                  ? "bg-primary text-primary-foreground border-2 border-primary"
+                                  : "bg-card border border-border/50 hover:border-primary/50"
+                              } ${isDatePast ? "opacity-60" : ""} ${isDateToday ? "ring-2 ring-primary/30" : ""}`}
+                            >
+                              <div className="flex items-center justify-between gap-1">
+                                <span>{format(date, "MMM d")}</span>
+                                {isSelected && (
+                                  <Check className="w-3 h-3 flex-shrink-0" />
+                                )}
+                              </div>
+                              {isDateToday && (
+                                <span className="text-[10px] text-primary mt-0.5 block">Today</span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {selectedDates.length > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        {selectedDates.length} {selectedDates.length === 1 ? "date" : "dates"} selected
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -328,10 +402,13 @@ export function EditDayBlocksModal({
 
         {/* Blocks List */}
         <div className="space-y-4 mb-6">
-          {blocks.map((block, index) => (
+          {blocks.map((block, index) => {
+            const blockColor = (block.color || "primary") as BlockColor;
+            const colors = colorMap[blockColor];
+            return (
             <div
               key={index}
-              className="p-4 rounded-lg border border-border/50 bg-card"
+              className={`p-4 rounded-lg border-2 ${colors.border} ${colors.bg} bg-card`}
             >
               <div className="flex items-start justify-between mb-3">
                 <h3 className="text-sm font-medium text-foreground">
@@ -412,7 +489,7 @@ export function EditDayBlocksModal({
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={block.category}
+                      value={block.category || ""}
                       onChange={(e) => updateBlock(index, "category", e.target.value)}
                       list={`categories-${index}`}
                       className="input-soft w-full text-sm"
@@ -429,7 +506,7 @@ export function EditDayBlocksModal({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => addCategory(block.category)}
+                        onClick={() => addCategory(block.category!)}
                         disabled={isSaving}
                       >
                         Add
@@ -478,7 +555,8 @@ export function EditDayBlocksModal({
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Add Block Button */}
@@ -494,7 +572,7 @@ export function EditDayBlocksModal({
         </Button>
 
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 pb-4 md:pb-0">
           <Button
             type="button"
             variant="outline"

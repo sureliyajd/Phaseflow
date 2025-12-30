@@ -14,7 +14,7 @@ const durationOptions = [
   {
     value: 30,
     label: "30 days",
-    description: "A gentle start — enough time to explore",
+    description: "A gentle start - enough time to explore",
   },
   {
     value: 60,
@@ -108,7 +108,7 @@ export default function CreatePhase() {
     if (useCustomDuration) {
       const customValue = parseInt(customDuration);
       if (!customDuration || isNaN(customValue) || customValue < 1) {
-        setError("Choose a duration that feels achievable — even one day counts");
+        setError("Choose a duration that feels achievable - even one day counts");
         return;
       }
       finalDuration = customValue;
@@ -116,7 +116,7 @@ export default function CreatePhase() {
 
     // Validate start date
     if (!startDate || isNaN(new Date(startDate).getTime())) {
-      setError("Pick a start date — whenever feels right");
+      setError("Pick a start date - whenever feels right");
       return;
     }
 
@@ -126,7 +126,7 @@ export default function CreatePhase() {
     }
 
     if (!expectedOutcome.trim()) {
-      setError("Imagine where you'd like to be — even a small hope counts");
+      setError("Imagine where you'd like to be - even a small hope counts");
       return;
     }
 
@@ -392,7 +392,7 @@ export default function CreatePhase() {
             />
             {mode === "from-template" && selectedTemplate && (
               <p className="text-xs text-muted-foreground mt-2">
-                Feel free to change this name — it's just a starting point
+                Feel free to change this name - it's just a starting point
               </p>
             )}
           </div>
@@ -541,7 +541,7 @@ export default function CreatePhase() {
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {mode === "from-template"
-                    ? "The template is just a starting point. Once your phase is created, you can edit everything — blocks, times, categories — to make it truly yours."
+                    ? "The template is just a starting point. Once your phase is created, you can edit everything - blocks, times, categories - to make it truly yours."
                     : "There's no perfect way to do this. Adjust as you learn. What matters is that you've chosen to begin."}
                 </p>
               </div>
@@ -549,7 +549,7 @@ export default function CreatePhase() {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-2">
+          <div className="pt-2 pb-24">
             <Button
               type="submit"
               size="xl"

@@ -39,8 +39,8 @@ export async function PUT(
     }
 
     // Validate time range
-    const startMinutes = startTime.split(":").map(Number).reduce((h, m) => h * 60 + m);
-    const endMinutes = endTime.split(":").map(Number).reduce((h, m) => h * 60 + m);
+    const startMinutes = startTime.split(":").map(Number).reduce((h: number, m: number) => h * 60 + m);
+    const endMinutes = endTime.split(":").map(Number).reduce((h: number, m: number) => h * 60 + m);
     if (endMinutes <= startMinutes) {
       return NextResponse.json(
         { error: "End time must be after start time" },

@@ -1,23 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { LogOut, User, Settings } from "lucide-react";
+import { LogOut, User, Settings, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function UserMenu() {
   const { data: session } = useSession();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
+    setIsOpen(false);
     await signOut({ redirect: false });
     router.push("/login");
     router.refresh();
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   if (!session?.user) {
     return null;
@@ -41,11 +61,17 @@ export function UserMenu() {
   const displayName = session.user?.name || session.user?.email?.split("@")[0] || "User";
 
   return (
-    <div className="flex items-center gap-1.5 sm:gap-3">
-      {/* User Info - Hidden on very small screens */}
-      <div className="hidden sm:flex items-center gap-2 min-w-0">
+    <div className="relative" ref={dropdownRef}>
+      {/* Dropdown Trigger Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 sm:gap-3 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+        aria-label="User menu"
+        aria-expanded={isOpen}
+      >
+        {/* Avatar */}
         <div
-          className="w-8 h-9 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
+          className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
           style={{
             backgroundColor: "var(--color-primary)",
             color: "var(--color-primary-foreground)",
@@ -53,57 +79,73 @@ export function UserMenu() {
         >
           {getUserInitials()}
         </div>
-        <div className="min-w-0">
+
+        {/* User Info - Hidden on mobile */}
+        <div className="hidden sm:block text-left min-w-0">
           <p className="text-sm font-medium text-foreground truncate">
             {displayName}
           </p>
-          <p className="text-xs text-muted-foreground truncate max-w-[120px]">
+          <p className="text-xs text-muted-foreground truncate max-w-[140px]">
             {session.user.email}
           </p>
         </div>
-      </div>
 
-      {/* Mobile: Just avatar icon, Desktop: Full user info + buttons */}
-      <div className="sm:hidden">
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
-          style={{
-            backgroundColor: "var(--color-primary)",
-            color: "var(--color-primary-foreground)",
-          }}
-        >
-          {getUserInitials()}
+        {/* Chevron Icon */}
+        <ChevronDown
+          className={`w-4 h-4 text-muted-foreground transition-transform flex-shrink-0 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-56 sm:w-64 rounded-xl bg-card border border-border/50 shadow-lg z-50 overflow-hidden">
+          {/* User Info Section */}
+          <div className="px-4 py-3 border-b border-border/30 bg-muted/20">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0"
+                style={{
+                  backgroundColor: "var(--color-primary)",
+                  color: "var(--color-primary-foreground)",
+                }}
+              >
+                {getUserInitials()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {displayName}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {session.user.email}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Menu Items */}
+          <div className="py-1">
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <Settings className="w-4 h-4 text-muted-foreground" />
+              <span>Profile & Settings</span>
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogOut className="w-4 h-4 text-muted-foreground" />
+              <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+            </button>
+          </div>
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex items-center gap-1 sm:gap-2">
-        {/* Profile/Settings Button */}
-        <Link href="/profile">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 sm:h-9 sm:w-9 md:h-auto md:w-auto md:px-3 md:gap-2"
-            title="Profile & Settings"
-          >
-            <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden md:inline">Profile</span>
-          </Button>
-        </Link>
-
-        {/* Logout Button - More spacing on mobile to prevent accidental clicks */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          className="h-8 w-8 sm:h-9 sm:w-9 md:h-auto md:w-auto md:px-3 md:gap-2 border-border/60"
-          title="Logout"
-        >
-          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden md:inline">Logout</span>
-        </Button>
-      </div>
+      )}
     </div>
   );
 }

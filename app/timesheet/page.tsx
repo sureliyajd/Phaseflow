@@ -295,7 +295,7 @@ export default function Timesheet() {
             {isTimesheetHeavy && phase?.why && (
               <div className="mx-5 mb-6 p-4 rounded-xl bg-muted/50 border border-border/30">
                 <p className="text-sm text-foreground">
-                  Life's been full today. That's normal. This phase is about {phase.why.toLowerCase()} — 
+                  Life's been full today. That's normal. This phase is about {phase.why.toLowerCase()} - 
                   your intention still matters, even when days don't go as planned.
                 </p>
               </div>
@@ -415,7 +415,7 @@ export default function Timesheet() {
                       </div>
                     </div>
 
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex gap-3 pt-2 pb-6">
             <Button
                         type="button"
                         variant="outline"
@@ -443,9 +443,9 @@ export default function Timesheet() {
 
             {/* Entries List */}
             {sortedDates.length === 0 && !showAddForm ? (
-              <div className="px-5 text-center py-12">
+              <div className="px-5 text-center py-12 pb-24">
                 <p className="text-muted-foreground mb-4">
-                  Nothing logged yet. Whenever something comes up, note it here — it helps you see the full picture.
+                  Nothing logged yet. Whenever something comes up, note it here - it helps you see the full picture.
                 </p>
                 <Button onClick={() => setShowAddForm(true)}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -453,7 +453,7 @@ export default function Timesheet() {
               </Button>
           </div>
             ) : (
-              <div className="px-5 space-y-6">
+              <div className="px-5 space-y-6 pb-24">
                 {sortedDates.map((dateKey) => {
                   const dateEntries = groupedEntries[dateKey];
                   const date = parseISO(dateKey);

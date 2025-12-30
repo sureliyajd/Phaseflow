@@ -180,6 +180,7 @@ export async function POST(
           note: block.note || null,
           startTime: block.startTime,
           endTime: block.endTime,
+          color: block.color || "primary",
           isTemplate: true,
           date: null,
         },

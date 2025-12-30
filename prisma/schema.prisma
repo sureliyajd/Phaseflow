@@ -63,6 +63,7 @@ model RoutineBlock {
   note        String?
   startTime   String
   endTime     String
+  color       String?  @default("primary")
   isTemplate  Boolean
   date        DateTime?
   createdAt  DateTime @default(now())

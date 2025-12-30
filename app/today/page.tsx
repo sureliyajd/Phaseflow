@@ -22,6 +22,7 @@ interface Block {
   startTime: string;
   endTime: string;
   category: string | null;
+  color?: string;
   executionStatus: BlockStatus;
 }
 
@@ -206,9 +207,9 @@ export default function Today() {
               </Link>
             </div>
           ) : blocks.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 pb-24">
               <p className="text-muted-foreground mb-2">
-                Nothing scheduled today. That's okay — take it easy.
+                Nothing scheduled today. That's okay - take it easy.
               </p>
               {phase?.why && (
                 <p className="text-sm text-foreground mt-3 px-4">
@@ -217,9 +218,9 @@ export default function Today() {
               )}
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 pb-24">
               {blocks.map((block, index) => {
-                const blockColor = getBlockColor(block.category);
+                const blockColor = (block.color as BlockColor) || getBlockColor(block.category);
                 const colors = colorMap[blockColor];
                 const isDone = block.executionStatus === "DONE";
                 const isSkipped = block.executionStatus === "SKIPPED";
@@ -314,7 +315,7 @@ export default function Today() {
                         ) : (
                           <X className="w-3 h-3" />
                         )}
-                        {isDone ? "Completed" : "Skipped — that's okay"}
+                        {isDone ? "Completed" : "Skipped - that's okay"}
                       </div>
                     )}
                   </motion.div>
@@ -322,7 +323,7 @@ export default function Today() {
               })}
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Edit Day Blocks Modal */}
         {showEditModal && phase && (
@@ -336,6 +337,7 @@ export default function Today() {
               startTime: b.startTime,
               endTime: b.endTime,
               category: b.category || "",
+              color: (b as any).color || "primary",
             }))}
             onClose={() => setShowEditModal(false)}
             onSave={() => {
@@ -361,7 +363,7 @@ export default function Today() {
             }}
           />
         )}
-      </div>
+      </motion.div>
     </AppLayout>
   );
 }

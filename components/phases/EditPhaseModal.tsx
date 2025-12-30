@@ -13,7 +13,7 @@ interface Phase {
   why: string;
   outcome: string;
   isActive: boolean;
-  currentDay: number;
+  currentDay?: number;
 }
 
 interface EditPhaseModalProps {
@@ -80,7 +80,7 @@ export function EditPhaseModal({ phase, onClose, onSave }: EditPhaseModalProps) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto pb-24 md:pb-4">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-foreground">Adjust Your Phase</h2>
           <Button
@@ -142,7 +142,7 @@ export function EditPhaseModal({ phase, onClose, onSave }: EditPhaseModalProps) 
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 pb-4 md:pb-0">
             <Button
               type="button"
               variant="outline"

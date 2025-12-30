@@ -42,6 +42,7 @@ interface DayBlock {
   startTime: string;
   endTime: string;
   category: string | null;
+  color?: string;
 }
 
 interface PhaseDay {
@@ -255,7 +256,7 @@ export default function PhaseBoard() {
         </div>
 
         {/* Timeline */}
-        <div className="px-5 space-y-1.5">
+        <div className="px-5 space-y-1.5 pb-24">
           {days.map((day) => {
             const isExpanded = expandedDays.has(day.date);
             const hasBlocks = day.blocks.length > 0;
@@ -394,7 +395,7 @@ export default function PhaseBoard() {
                           className="text-center py-4"
                         >
                           <p className="text-xs text-muted-foreground mb-2">
-                            A quiet day — nothing planned yet
+                            A quiet day - nothing planned yet
                           </p>
                           <Button
                             variant="outline"

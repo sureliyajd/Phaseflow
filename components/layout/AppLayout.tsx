@@ -22,7 +22,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </div>
       </header>
-      <main className="pb-24 md:pb-8 md:pl-0">
+      <main className="pb-28 md:pb-8 md:pl-0">
         {children}
       </main>
       <BottomNav />

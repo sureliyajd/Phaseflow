@@ -291,7 +291,7 @@ export default function Dashboard() {
               <div className="mx-4 sm:mx-5 mt-4 p-3 sm:p-4 rounded-xl bg-muted/50 border border-border/30">
                 <p className="text-sm text-foreground">
                   You've had a few challenging days. This phase is about {metrics.phaseMotivation.why.toLowerCase()}. 
-                  Consider adjusting your routine if it feels too much right now — your intention still matters.
+                  Consider adjusting your routine if it feels too much right now - your intention still matters.
                 </p>
               </div>
             )}
@@ -330,7 +330,7 @@ export default function Dashboard() {
               <p className="text-xs text-muted-foreground mt-2">
                 {metrics.todayBlocks.completed === metrics.todayBlocks.total
                   ? "You showed up today. Well done."
-                  : `${metrics.todayBlocks.total - metrics.todayBlocks.completed} ${metrics.todayBlocks.total - metrics.todayBlocks.completed === 1 ? "block" : "blocks"} to go — no rush`}
+                  : `${metrics.todayBlocks.total - metrics.todayBlocks.completed} ${metrics.todayBlocks.total - metrics.todayBlocks.completed === 1 ? "block" : "blocks"} to go - no rush`}
               </p>
             </>
           ) : (
@@ -346,7 +346,7 @@ export default function Dashboard() {
             <p className="text-2xl sm:text-3xl font-bold text-primary">
               {metrics?.adherence !== null && metrics?.adherence !== undefined
                 ? `${metrics.adherence}%`
-                : "—"}
+                : "-"}
             </p>
             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {metrics?.adherence !== null && metrics?.adherence !== undefined
@@ -386,7 +386,7 @@ export default function Dashboard() {
         </div>
 
         {/* Encouragement */}
-        <div className="mx-4 sm:mx-5 mt-4 sm:mt-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-primary-light to-calm/20 border border-primary/10">
+        <div className="mx-4 sm:mx-5 mt-4 sm:mt-6 mb-24 sm:mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-primary-light to-calm/20 border border-primary/10">
           <p className="text-center text-foreground text-sm sm:text-base">
             Progress isn't always visible. Trust the process.
           </p>

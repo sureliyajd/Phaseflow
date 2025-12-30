@@ -392,7 +392,6 @@ export default function RoutineBuilder() {
                       </div>
                   </div>
                 </div>
-                  </div>
                   );
                 })}
             </div>
@@ -521,7 +520,7 @@ export default function RoutineBuilder() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-3 pt-2 pb-6">
                   <Button
                     variant="outline"
                     onClick={resetForm}
@@ -552,7 +551,7 @@ export default function RoutineBuilder() {
 
           {/* Apply Routine CTA */}
           {coreRoutine.length > 0 && !isAdding && (
-            <div className="mt-8">
+            <div className="mt-8 pb-24">
               <div className="card-soft p-6 text-center">
                 <CheckCircle2 className="w-12 h-12 mx-auto text-primary mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">
@@ -571,7 +570,7 @@ export default function RoutineBuilder() {
 
           {/* Empty State */}
           {coreRoutine.length === 0 && !isAdding && (
-            <div className="text-center py-12">
+            <div className="text-center py-12 pb-24">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-muted flex items-center justify-center mb-4">
                 <Clock className="w-8 h-8 text-muted-foreground" />
               </div>

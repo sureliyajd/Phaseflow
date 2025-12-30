@@ -126,7 +126,7 @@ export function CloneRoutineModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="card-soft w-full max-w-md max-h-[90vh] overflow-y-auto pb-24 md:pb-4">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-primary-light flex items-center justify-center">
@@ -297,7 +297,7 @@ export function CloneRoutineModal({
                   Your routine will fill all days except{" "}
                   {excludedDates.length > 0
                     ? `the ${excludedDates.length} ${excludedDates.length === 1 ? "date" : "dates"} you've chosen to skip`
-                    : "— select dates above to exclude them"}
+                    : "- select dates above to exclude them"}
                   .
                 </>
               )}
@@ -305,7 +305,7 @@ export function CloneRoutineModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 pb-4 md:pb-0">
             <Button
               type="button"
               variant="outline"

@@ -58,7 +58,18 @@ export async function GET(
       },
     });
 
-    return NextResponse.json({ blocks });
+    // Format blocks with color
+    const formattedBlocks = blocks.map((block) => ({
+      id: block.id,
+      title: block.title,
+      note: block.note,
+      startTime: block.startTime,
+      endTime: block.endTime,
+      category: block.category?.name || null,
+      color: block.color || "primary",
+    }));
+
+    return NextResponse.json({ blocks: formattedBlocks });
   } catch (error) {
     console.error("Error fetching day blocks:", error);
     return NextResponse.json(
@@ -249,6 +260,7 @@ export async function PUT(
             note: block.note || null,
             startTime: block.startTime,
             endTime: block.endTime,
+            color: block.color || "primary",
             isTemplate: false,
             date: startOfDay(date),
           },

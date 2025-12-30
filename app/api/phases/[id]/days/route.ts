@@ -94,6 +94,7 @@ export async function GET(
           startTime: b.startTime,
           endTime: b.endTime,
           category: b.category?.name || null,
+          color: b.color || "primary",
         })),
       };
     });

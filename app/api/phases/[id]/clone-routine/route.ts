@@ -143,6 +143,7 @@ export async function POST(
             note: template.note,
             startTime: template.startTime,
             endTime: template.endTime,
+            color: template.color || "primary",
             isTemplate: false,
             date: blockDate,
           },

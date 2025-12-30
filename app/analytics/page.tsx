@@ -217,7 +217,7 @@ export default async function Analytics() {
             value={
               typeof phase.currentStreak === "number" && phase.currentStreak >= 0
                 ? `${phase.currentStreak}`
-                : "—"
+                : "-"
             }
             subtext={
               typeof phase.currentStreak === "number" && phase.currentStreak >= 0
@@ -232,7 +232,7 @@ export default async function Analytics() {
             value={
               typeof phase.longestStreak === "number" && phase.longestStreak >= 0
                 ? `${phase.longestStreak}`
-                : "—"
+                : "-"
             }
             subtext={
               typeof phase.longestStreak === "number" && phase.longestStreak >= 0
@@ -247,7 +247,7 @@ export default async function Analytics() {
             value={
               adherencePercentage !== null && adherencePercentage !== undefined
                 ? `${adherencePercentage}%`
-                : "—"
+                : "-"
             }
             subtext={
               daysWithBlocks > 0
@@ -259,7 +259,7 @@ export default async function Analytics() {
           <StatCard
             icon="Clock"
             label="Balance"
-            value={totalTime > 0 ? `${plannedShare}% planned` : "—"}
+            value={totalTime > 0 ? `${plannedShare}% planned` : "-"}
             subtext={
               totalTime > 0
                 ? `Routine ${formatMinutes(
@@ -272,14 +272,14 @@ export default async function Analytics() {
         </div>
 
         {/* Timesheet Breakdown */}
-        <div className="px-5 mt-6">
+        <div className="px-5 mt-6 mb-24 sm:mb-8">
           <div className="card-soft p-4">
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">
               Where life showed up
             </h3>
             {Object.keys(timesheetByPriority).length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nothing logged yet — and that's perfectly fine.
+                Nothing logged yet - and that's perfectly fine.
               </p>
             ) : (
               <div className="space-y-2 text-sm">

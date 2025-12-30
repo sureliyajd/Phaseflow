@@ -169,7 +169,7 @@ export default function CreateBlock() {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-4">
+          <div className="pt-4 pb-24">
             <Button type="submit" size="xl" className="w-full">
               Create Block
             </Button>

@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 frontend-code/phaseflow-ui-design
+.env*.local
